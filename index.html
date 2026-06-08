@@ -34,7 +34,7 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: Wikipedia API + Gamma API + Distribución Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: Wikipedia API + Gamma API + Tasa Poisson Dinámica</p>
 
     <div class="selectors">
         <div class="selector-group">
@@ -130,10 +130,9 @@
 </div>
 
 <script>
-    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS (NUEVO MOTOR WIKIPEDIA) --- //
+    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS (WIKIPEDIA + POLYMARKET) --- //
     
     async function rasparELO(equipo) {
-        // Diccionario estricto para conectar con las tablas en inglés
         const traducirWiki = {
             "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Bélgica": "Belgium",
             "Brasil": "Brazil", "Canadá": "Canada", "Chequia": "Czech Republic", 
@@ -148,20 +147,16 @@
         let eq_EN = traducirWiki[equipo] || equipo;
 
         try {
-            // Wikipedia permite lecturas públicas sin bloquear la conexión
             const urlWiki = `https://en.wikipedia.org/w/api.php?action=parse&page=World_Football_Elo_Ratings&prop=text&format=json&origin=*`;
             const respuesta = await fetch(urlWiki);
             const data = await respuesta.json();
             
-            // Convertimos la respuesta cruda en un DOM HTML navegable
             const parser = new DOMParser();
             const doc = parser.parseFromString(data.parse.text['*'], 'text/html');
             const celdas = Array.from(doc.querySelectorAll('td'));
             
-            // Escaneamos la tabla buscando la celda que contiene el país
             for (let i = 0; i < celdas.length; i++) {
                 if (celdas[i].textContent.trim() === eq_EN || celdas[i].textContent.includes(eq_EN)) {
-                    // El puntaje siempre está 1 o 2 celdas a la derecha
                     let puntaje1 = celdas[i+1]?.textContent.replace(/\D/g, '');
                     let puntaje2 = celdas[i+2]?.textContent.replace(/\D/g, '');
                     
@@ -264,27 +259,43 @@
         if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
 
         btn.disabled = true;
-        btn.innerText = "Sincronizando con Wikipedia...";
+        btn.innerText = "Calculando métricas en vivo...";
         resultadosDiv.style.display = 'none';
         
         const datos = await extraerDatos(eqA, eqB);
 
         // Render Diagnóstico
-        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO (Wiki API):</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
-        document.getElementById('debugPoly').innerHTML = `<b>Polymarket:</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
+        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
+        document.getElementById('debugPoly').innerHTML = `<b>Mercado:</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
         document.getElementById('debugPanel').style.display = 'block';
 
-        // --- MODELO: ELO-DERIVED GOAL DIFFERENCE ---
-        const golesTotales = 2.5; 
+        // --- MODELO: TASA DE GOLES DINÁMICA + ELO GOAL DIFFERENCE ---
+        
+        // 1. Calculamos el factor de disparidad
+        const diferenciaAbsoluta = Math.abs(datos.eloA - datos.eloB);
+        const factorDisparidad = diferenciaAbsoluta / 500; 
+
+        // 2. Calculamos el factor ofensivo global
+        const factorOfensivo = ((datos.eloA + datos.eloB) - 3600) / 2000;
+
+        // 3. Establecemos la tasa dinámica de goles para el partido
+        let golesTotales = 2.5 + factorDisparidad + factorOfensivo;
+
+        // Control de límites lógicos
+        if (golesTotales < 1.5) golesTotales = 1.5;
+        if (golesTotales > 4.5) golesTotales = 4.5;
+
+        // 4. Distribuimos el volumen de goles según la expectativa de ventaja
         const diferenciaGolesEsperada = ((datos.eloA - datos.eloB) / 400) * 1.5;
 
         let xgA = (golesTotales + diferenciaGolesEsperada) / 2;
         let xgB = (golesTotales - diferenciaGolesEsperada) / 2;
         
+        // Prevención de valores nulos
         if (xgA < 0.1) xgA = 0.1;
         if (xgB < 0.1) xgB = 0.1;
 
-        // Matriz de Poisson
+        // Matriz de Poisson (0 a 6 goles)
         let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
         let maxProbExacta = 0;
         let resExactoA = 0, resExactoB = 0;
@@ -305,7 +316,7 @@
             }
         }
 
-        // Ponderación (Blend)
+        // Ponderación (Blend) - 70% Mercado / 30% ELO
         const alpha = 0.70; 
         let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
         let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
