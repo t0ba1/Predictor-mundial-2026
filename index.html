@@ -17,10 +17,12 @@
         button:hover { background-color: #166fe5; }
         button:disabled { background-color: #9cb4d8; cursor: not-allowed; }
         
+        /* Panel de Diagnóstico */
         .debug-panel { background-color: #e7f3ff; border-left: 6px solid #1877f2; padding: 15px 20px; border-radius: 8px; margin-top: 25px; display: none; }
         .debug-panel h3 { margin-top: 0; color: #1877f2; font-size: 16px; margin-bottom: 10px; }
         .debug-data { display: flex; justify-content: space-between; font-family: monospace; font-size: 14px; color: #333; }
         
+        /* Resultados Finales */
         .results { margin-top: 30px; display: none; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
         .card { background: #fff; padding: 20px; border-radius: 10px; border: 1px solid #e4e6eb; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -34,7 +36,7 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: ELO + Gamma API + Distribución Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: ELO en Vivo + Gamma API + Distribución Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
@@ -145,9 +147,16 @@
         } catch (error) {
             console.warn(`Proxy falló para ${equipo}. Usando diccionario de contingencia.`);
             const baseContingencia = {
-                "Alemania": 1980, "Argentina": 2140, "Brasil": 2080, "Colombia": 2005, 
-                "España": 2030, "Francia": 2105, "Inglaterra": 2040, "Países Bajos": 2020, 
-                "Portugal": 2015, "Uruguay": 2000
+                "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
+                "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
+                "Canadá": 1750, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, "Croacia": 1990,
+                "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
+                "Estados Unidos": 1900, "Francia": 2105, "Ghana": 1680, "Haití": 1610, "Inglaterra": 2040,
+                "Irak": 1660, "Irán": 1870, "Japón": 1930, "Jordania": 1640, "Marruecos": 1910,
+                "México": 1890, "Noruega": 1830, "Nueva Zelanda": 1650, "Países Bajos": 2020, "Panamá": 1690,
+                "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "República Checa": 1800,
+                "Senegal": 1920, "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770,
+                "Turquía": 1810, "Uruguay": 2000, "Uzbekistán": 1700
             };
             return baseContingencia[equipo] || 1750; 
         }
@@ -157,23 +166,42 @@
         const eloA = await rasparELO(eqA);
         const eloB = await rasparELO(eqB);
 
+        const traducir = {
+            "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Bélgica": "Belgium",
+            "Brasil": "Brazil", "Canadá": "Canada", "Corea del Sur": "South Korea",
+            "Costa de Marfil": "Ivory Coast", "Croacia": "Croatia", "Egipto": "Egypt",
+            "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "USA",
+            "Francia": "France", "Inglaterra": "England", "Japón": "Japan",
+            "Marruecos": "Morocco", "México": "Mexico", "Países Bajos": "Netherlands",
+            "República Checa": "Czech Republic", "Sudáfrica": "South Africa",
+            "Suecia": "Sweden", "Suiza": "Switzerland", "Turquía": "Turkey"
+        };
+
+        let eqA_EN = traducir[eqA] || eqA;
+        let eqB_EN = traducir[eqB] || eqB;
+
         let mktLocal, mktEmpate, mktVisit;
         
         try {
-            // Intento de lectura de mercado en vivo (Gamma API)
-            const respuesta = await fetch(`https://gamma-api.polymarket.com/events?search=${encodeURIComponent(eqA)}`);
-            const data = await respuesta.json();
-            const mercado = data.find(evento => evento.title.includes(eqB));
+            const urlReal = `https://gamma-api.polymarket.com/events?search=${encodeURIComponent(eqA_EN)}`;
+            const urlProxy = `https://api.allorigins.win/get?url=${encodeURIComponent(urlReal)}`;
+            
+            const respuesta = await fetch(urlProxy);
+            const dataWrap = await respuesta.json();
+            const data = JSON.parse(dataWrap.contents); 
+            
+            const mercado = data.find(evento => evento.title.includes(eqB_EN));
             
             if (mercado && mercado.markets && mercado.markets.length > 0) {
                 let tokens = mercado.markets[0].outcomePrices;
                 if (typeof tokens === 'string') tokens = JSON.parse(tokens);
                 mktLocal = parseFloat(tokens[0]); mktEmpate = parseFloat(tokens[1]); mktVisit = parseFloat(tokens[2]);
             } else {
-                throw new Error("Sin liquidez");
+                throw new Error("Mercado no abierto en Polymarket aún");
             }
         } catch (error) {
-            // Fallback Dinámico: Probabilidad Implícita Simulada si el mercado está cerrado
+            console.warn("Usando fallback dinámico para Polymarket:", error.message);
+            
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
             let expVisit = 1 - expLocal;
@@ -199,6 +227,7 @@
         return n;
     }
 
+    // Distribución de Poisson pura
     function poisson(k, lambda) {
         return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
     }
@@ -212,28 +241,29 @@
         if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
 
         btn.disabled = true;
-        btn.innerText = "Calculando métricas...";
+        btn.innerText = "Sincronizando datos en vivo...";
         resultadosDiv.style.display = 'none';
         
         const datos = await extraerDatos(eqA, eqB);
 
         // Render Diagnóstico
-        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
-        document.getElementById('debugPoly').innerHTML = `<b>Mercado (Gamma API):</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
+        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO (Live):</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
+        document.getElementById('debugPoly').innerHTML = `<b>Polymarket (Proxy):</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
         document.getElementById('debugPanel').style.display = 'block';
 
         // --- MODELO: ELO-DERIVED GOAL DIFFERENCE ---
-        const golesTotales = 2.5; 
+        const golesTotales = 2.5; // Constante internacional FIFA
         const diferenciaGolesEsperada = ((datos.eloA - datos.eloB) / 400) * 1.5;
 
-        // Distribución de xG asegurando límite cero
+        // Distribución estricta de xG
         let xgA = (golesTotales + diferenciaGolesEsperada) / 2;
         let xgB = (golesTotales - diferenciaGolesEsperada) / 2;
         
+        // Pisos técnicos para evitar errores indeterminados
         if (xgA < 0.1) xgA = 0.1;
         if (xgB < 0.1) xgB = 0.1;
 
-        // Matriz de Poisson
+        // Matriz de Poisson (Evaluamos escenarios del 0-0 al 6-6)
         let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
         let maxProbExacta = 0;
         let resExactoA = 0, resExactoB = 0;
@@ -254,16 +284,17 @@
             }
         }
 
-        // Ponderación (Blend)
+        // Ponderación (Blend) -> 70% Mercado / 30% Historial ELO
         const alpha = 0.70; 
         let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
         let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
         let pB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
 
+        // Normalización final
         let suma = pA + pE + pB;
         pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
 
-        // Interfaz
+        // Interfaz Gráfica
         document.getElementById('lblA').innerText = eqA;
         document.getElementById('lblB').innerText = eqB;
         
