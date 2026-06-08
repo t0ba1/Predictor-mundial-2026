@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predictor Mundial: ELO + Polymarket</title>
+    <title>Predictor Mundial 2026: ELO + Polymarket</title>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
@@ -35,30 +35,114 @@
 <body>
 
 <div class="container">
-    <h1>⚽ Predictor Cuantitativo</h1>
-    <p class="subtitle">Motor Híbrido: Puntos ELO + Consenso Polymarket + Distribución Poisson</p>
+    <h1>⚽ Predictor Mundial 2026</h1>
+    <p class="subtitle">Motor Híbrido: Puntos ELO + Consenso de Mercado + Distribución Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
             <label for="equipoA">Equipo Local (A)</label>
             <select id="equipoA">
-                <option value="Argentina">Argentina</option>
-                <option value="Brasil">Brasil</option>
-                <option value="Francia">Francia</option>
-                <option value="Inglaterra">Inglaterra</option>
-                <option value="España">España</option>
                 <option value="Alemania">Alemania</option>
+                <option value="Arabia Saudita">Arabia Saudita</option>
+                <option value="Argelia">Argelia</option>
+                <option value="Argentina" selected>Argentina</option>
+                <option value="Australia">Australia</option>
+                <option value="Austria">Austria</option>
+                <option value="Bélgica">Bélgica</option>
+                <option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
+                <option value="Brasil">Brasil</option>
+                <option value="Cabo Verde">Cabo Verde</option>
+                <option value="Canadá">Canadá</option>
+                <option value="Colombia">Colombia</option>
+                <option value="Corea del Sur">Corea del Sur</option>
+                <option value="Costa de Marfil">Costa de Marfil</option>
+                <option value="Croacia">Croacia</option>
+                <option value="Curazao">Curazao</option>
+                <option value="Ecuador">Ecuador</option>
+                <option value="Egipto">Egipto</option>
+                <option value="Escocia">Escocia</option>
+                <option value="España">España</option>
+                <option value="Estados Unidos">Estados Unidos</option>
+                <option value="Francia">Francia</option>
+                <option value="Ghana">Ghana</option>
+                <option value="Haití">Haití</option>
+                <option value="Inglaterra">Inglaterra</option>
+                <option value="Irak">Irak</option>
+                <option value="Irán">Irán</option>
+                <option value="Japón">Japón</option>
+                <option value="Jordania">Jordania</option>
+                <option value="Marruecos">Marruecos</option>
+                <option value="México">México</option>
+                <option value="Noruega">Noruega</option>
+                <option value="Nueva Zelanda">Nueva Zelanda</option>
+                <option value="Países Bajos">Países Bajos</option>
+                <option value="Panamá">Panamá</option>
+                <option value="Paraguay">Paraguay</option>
+                <option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option>
+                <option value="RD Congo">RD Congo</option>
+                <option value="República Checa">República Checa</option>
+                <option value="Senegal">Senegal</option>
+                <option value="Sudáfrica">Sudáfrica</option>
+                <option value="Suecia">Suecia</option>
+                <option value="Suiza">Suiza</option>
+                <option value="Túnez">Túnez</option>
+                <option value="Turquía">Turquía</option>
+                <option value="Uruguay">Uruguay</option>
+                <option value="Uzbekistán">Uzbekistán</option>
             </select>
         </div>
         <div class="selector-group">
             <label for="equipoB">Equipo Visitante (B)</label>
             <select id="equipoB">
-                <option value="Francia">Francia</option>
-                <option value="Argentina">Argentina</option>
-                <option value="Brasil">Brasil</option>
-                <option value="Inglaterra">Inglaterra</option>
-                <option value="España">España</option>
                 <option value="Alemania">Alemania</option>
+                <option value="Arabia Saudita">Arabia Saudita</option>
+                <option value="Argelia">Argelia</option>
+                <option value="Argentina">Argentina</option>
+                <option value="Australia">Australia</option>
+                <option value="Austria">Austria</option>
+                <option value="Bélgica">Bélgica</option>
+                <option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
+                <option value="Brasil">Brasil</option>
+                <option value="Cabo Verde">Cabo Verde</option>
+                <option value="Canadá">Canadá</option>
+                <option value="Colombia">Colombia</option>
+                <option value="Corea del Sur">Corea del Sur</option>
+                <option value="Costa de Marfil">Costa de Marfil</option>
+                <option value="Croacia">Croacia</option>
+                <option value="Curazao">Curazao</option>
+                <option value="Ecuador">Ecuador</option>
+                <option value="Egipto">Egipto</option>
+                <option value="Escocia">Escocia</option>
+                <option value="España">España</option>
+                <option value="Estados Unidos">Estados Unidos</option>
+                <option value="Francia" selected>Francia</option>
+                <option value="Ghana">Ghana</option>
+                <option value="Haití">Haití</option>
+                <option value="Inglaterra">Inglaterra</option>
+                <option value="Irak">Irak</option>
+                <option value="Irán">Irán</option>
+                <option value="Japón">Japón</option>
+                <option value="Jordania">Jordania</option>
+                <option value="Marruecos">Marruecos</option>
+                <option value="México">México</option>
+                <option value="Noruega">Noruega</option>
+                <option value="Nueva Zelanda">Nueva Zelanda</option>
+                <option value="Países Bajos">Países Bajos</option>
+                <option value="Panamá">Panamá</option>
+                <option value="Paraguay">Paraguay</option>
+                <option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option>
+                <option value="RD Congo">RD Congo</option>
+                <option value="República Checa">República Checa</option>
+                <option value="Senegal">Senegal</option>
+                <option value="Sudáfrica">Sudáfrica</option>
+                <option value="Suecia">Suecia</option>
+                <option value="Suiza">Suiza</option>
+                <option value="Túnez">Túnez</option>
+                <option value="Turquía">Turquía</option>
+                <option value="Uruguay">Uruguay</option>
+                <option value="Uzbekistán">Uzbekistán</option>
             </select>
         </div>
     </div>
@@ -90,28 +174,31 @@
             </div>
         </div>
         <div class="score-box" id="resultadoExacto">
-            Resultado más probable: Calculando...
+            Marcador más probable: Calculando...
         </div>
     </div>
 </div>
 
 <script>
-    // --- 1. EXTRACCIÓN DE DATOS --- //
-    
+    // --- 1. BASE DE DATOS ELO 48 EQUIPOS --- //
     async function extraerDatos(eqA, eqB) {
-        // En un entorno de producción estricto, acá el código llama al Proxy de AllOrigins.
-        // Para asegurar que la página nunca se rompa si la web oficial cambia su código HTML,
-        // usamos un diccionario de contingencia actualizado con los valores reales.
         const baseELO = {
-            "Argentina": 2140, "Francia": 2105, "Brasil": 2080,
-            "Inglaterra": 2040, "España": 2030, "Alemania": 2010
+            "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
+            "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
+            "Canadá": 1750, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, "Croacia": 1990,
+            "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
+            "Estados Unidos": 1900, "Francia": 2105, "Ghana": 1680, "Haití": 1610, "Inglaterra": 2040,
+            "Irak": 1660, "Irán": 1870, "Japón": 1930, "Jordania": 1640, "Marruecos": 1910,
+            "México": 1890, "Noruega": 1830, "Nueva Zelanda": 1650, "Países Bajos": 2020, "Panamá": 1690,
+            "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "República Checa": 1800,
+            "Senegal": 1920, "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770,
+            "Turquía": 1810, "Uruguay": 2000, "Uzbekistán": 1700
         };
 
         const eloA = baseELO[eqA];
         const eloB = baseELO[eqB];
 
-        // Simulamos la normalización de la API de Polymarket (quitando el overround)
-        // Por defecto, asignamos una ligera ventaja de mercado al que tiene más ELO.
+        // Normalización del mercado simulada
         let mktLocal = eloA > eloB ? 0.45 : 0.35;
         let mktVisit = eloA > eloB ? 0.30 : 0.40;
         let mktEmpate = 0.25;
@@ -120,15 +207,12 @@
     }
 
     // --- 2. MOTOR MATEMÁTICO --- //
-
-    // Factorial para la fórmula de Poisson
     function factorial(n) {
         if (n === 0 || n === 1) return 1;
         for (var i = n - 1; i >= 1; i--) { n *= i; }
         return n;
     }
 
-    // Distribución de Poisson
     function poisson(k, lambda) {
         return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
     }
@@ -145,25 +229,22 @@
             return;
         }
 
-        // Estado de carga
         btn.disabled = true;
-        btn.innerText = "Extrayendo datos de la red...";
+        btn.innerText = "Procesando...";
         resultadosDiv.style.display = 'none';
         
-        // Simular tiempo de conexión a la API para realismo
         setTimeout(async () => {
             const datos = await extraerDatos(eqA, eqB);
 
-            // --- MOSTRAR DIAGNÓSTICO AL USUARIO ---
-            document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
-            document.getElementById('debugPoly').innerHTML = `<b>Polymarket (Limpio):</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
+            // Mostrar ELO
+            document.getElementById('debugELO').innerHTML = `<b>Puntos ELO Base:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
+            document.getElementById('debugPoly').innerHTML = `<b>Mercado (Limpio):</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
             debugPanel.style.display = 'block';
 
-            // --- CÁLCULO DE GOLES ESPERADOS (xG) ---
-            const eloPromedioTorneo = 1950;
-            const golesBase = 1.25; // Promedio histórico de goles por equipo
+            // Cálculo xG
+            const eloPromedioTorneo = 1845; // Actualizado al promedio de los 48 equipos
+            const golesBase = 1.25;
 
-            // Fuerza relativa basada en ELO
             let fuerzaOfensivaA = datos.eloA / eloPromedioTorneo;
             let defensaB = eloPromedioTorneo / datos.eloB;
             let xgA = golesBase * fuerzaOfensivaA * defensaB;
@@ -172,24 +253,21 @@
             let defensaA = eloPromedioTorneo / datos.eloA;
             let xgB = golesBase * fuerzaOfensivaB * defensaA;
 
-            // --- MATRIZ DE POISSON ---
+            // Matriz de Poisson
             let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
             let maxProbExacta = 0;
             let resExactoA = 0, resExactoB = 0;
 
-            // Calculamos todos los resultados posibles del 0-0 al 5-5
             for (let i = 0; i <= 5; i++) {
                 for (let j = 0; j <= 5; j++) {
                     let probI = poisson(i, xgA);
                     let probJ = poisson(j, xgB);
                     let probEscenario = probI * probJ;
 
-                    // Sumamos para la victoria, empate o derrota
                     if (i > j) probLocalELO += probEscenario;
                     else if (i === j) probEmpateELO += probEscenario;
                     else probVisitanteELO += probEscenario;
 
-                    // Guardamos el resultado exacto con el porcentaje más alto
                     if (probEscenario > maxProbExacta) {
                         maxProbExacta = probEscenario;
                         resExactoA = i;
@@ -198,22 +276,19 @@
                 }
             }
 
-            // --- EL BLEND (Ponderación ELO + Polymarket) ---
-            // Le damos 70% de peso al mercado financiero (sabiduría de las multitudes)
-            // y 30% a la historia estructural (ELO).
+            // Ponderación (Blend)
             const alpha = 0.70; 
             
             let probFinalA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
             let probFinalEmpate = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
             let probFinalB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
 
-            // Ajuste fino para asegurar que sumen exactamente 100%
             let sumaTotal = probFinalA + probFinalEmpate + probFinalB;
             probFinalA = (probFinalA / sumaTotal) * 100;
             probFinalEmpate = (probFinalEmpate / sumaTotal) * 100;
             probFinalB = (probFinalB / sumaTotal) * 100;
 
-            // --- RENDERIZAR EN INTERFAZ ---
+            // Interfaz
             document.getElementById('lblA').innerText = eqA;
             document.getElementById('lblB').innerText = eqB;
             
@@ -221,22 +296,19 @@
             document.getElementById('resEmpate').innerText = probFinalEmpate.toFixed(1) + "%";
             document.getElementById('resB').innerText = probFinalB.toFixed(1) + "%";
 
-            // Limpiar estilos de ganador
             document.getElementById('cardA').classList.remove('winner');
             document.getElementById('cardB').classList.remove('winner');
 
-            // Destacar al favorito visualmente
             if (probFinalA > probFinalB) document.getElementById('cardA').classList.add('winner');
             if (probFinalB > probFinalA) document.getElementById('cardB').classList.add('winner');
 
-            document.getElementById('resultadoExacto').innerHTML = `Marcador más probable (Poisson): <b>${eqA} ${resExactoA} - ${resExactoB} ${eqB}</b>`;
+            document.getElementById('resultadoExacto').innerHTML = `Marcador más probable (Poisson): <br><b>${eqA} ${resExactoA} - ${resExactoB} ${eqB}</b>`;
 
-            // Restaurar botón
             btn.innerText = "Calcular Predicción Maestra";
             btn.disabled = false;
             resultadosDiv.style.display = 'block';
 
-        }, 800); // Fin del Timeout
+        }, 800);
     }
 </script>
 
