@@ -70,7 +70,7 @@
             <label for="equipoB">Equipo Visitante (B)</label>
             <select id="equipoB">
                 <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
-                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
+                <option value="Argelia" selected>Argelia</option><option value="Argentina">Argentina</option>
                 <option value="Australia">Australia</option><option value="Austria">Austria</option>
                 <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
                 <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
@@ -80,7 +80,7 @@
                 <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
                 <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
                 <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
-                <option value="Francia" selected>Francia</option><option value="Ghana">Ghana</option>
+                <option value="Francia">Francia</option><option value="Ghana">Ghana</option>
                 <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
                 <option value="Irak">Irak</option><option value="Irán">Irán</option>
                 <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
@@ -130,21 +130,28 @@
 </div>
 
 <script>
-    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS (WIKIPEDIA + POLYMARKET) --- //
-    
+    // --- DICCIONARIO MAESTRO DE TRADUCCIÓN (48 SELECCIONES) --- //
+    const traducirMundial = {
+        "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Argelia": "Algeria",
+        "Australia": "Australia", "Austria": "Austria", "Bélgica": "Belgium",
+        "Bosnia y Herzegovina": "Bosnia and Herzegovina", "Brasil": "Brazil",
+        "Cabo Verde": "Cape Verde", "Canadá": "Canada", "Chequia": "Czech Republic",
+        "Colombia": "Colombia", "Corea del Sur": "South Korea", "Costa de Marfil": "Ivory Coast",
+        "Croacia": "Croatia", "Curazao": "Curaçao", "Ecuador": "Ecuador", "Egipto": "Egypt",
+        "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "United States",
+        "Francia": "France", "Ghana": "Ghana", "Haití": "Haiti", "Inglaterra": "England",
+        "Irak": "Iraq", "Irán": "Iran", "Japón": "Japan", "Jordania": "Jordan",
+        "Marruecos": "Morocco", "México": "Mexico", "Noruega": "Norway",
+        "Nueva Zelanda": "New Zealand", "Países Bajos": "Netherlands", "Panamá": "Panama",
+        "Paraguay": "Paraguay", "Portugal": "Portugal", "Qatar": "Qatar",
+        "RD Congo": "Congo", "Senegal": "Senegal", "Sudáfrica": "South Africa",
+        "Suecia": "Sweden", "Suiza": "Switzerland", "Túnez": "Tunisia", 
+        "Turquía": "Turkey", "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
+    };
+
+    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS --- //
     async function rasparELO(equipo) {
-        const traducirWiki = {
-            "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Bélgica": "Belgium",
-            "Brasil": "Brazil", "Canadá": "Canada", "Chequia": "Czech Republic", 
-            "Corea del Sur": "South Korea", "Costa de Marfil": "Ivory Coast", 
-            "Croacia": "Croatia", "Egipto": "Egypt", "Escocia": "Scotland", 
-            "España": "Spain", "Estados Unidos": "United States", "Francia": "France", 
-            "Inglaterra": "England", "Japón": "Japan", "Marruecos": "Morocco", 
-            "México": "Mexico", "Países Bajos": "Netherlands", "Sudáfrica": "South Africa",
-            "Suecia": "Sweden", "Suiza": "Switzerland", "Turquía": "Turkey"
-        };
-        
-        let eq_EN = traducirWiki[equipo] || equipo;
+        let eq_EN = traducirMundial[equipo] || equipo;
 
         try {
             const urlWiki = `https://en.wikipedia.org/w/api.php?action=parse&page=World_Football_Elo_Ratings&prop=text&format=json&origin=*`;
@@ -164,9 +171,9 @@
                     if (puntaje2 && puntaje2.length === 4) return parseInt(puntaje2);
                 }
             }
-            throw new Error("Equipo fuera del listado principal de Wikipedia");
+            throw new Error("No encontrado en la tabla principal");
         } catch (error) {
-            console.warn(`Fallback de seguridad activado para ${equipo}`);
+            console.warn(`Fallback activado para ${equipo}`);
             const baseSegura = {
                 "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
                 "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
@@ -187,19 +194,8 @@
         const eloA = await rasparELO(eqA);
         const eloB = await rasparELO(eqB);
 
-        const traducirPoly = {
-            "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Bélgica": "Belgium",
-            "Brasil": "Brazil", "Canadá": "Canada", "Chequia": "Czech Republic", 
-            "Corea del Sur": "South Korea", "Costa de Marfil": "Ivory Coast", 
-            "Croacia": "Croatia", "Egipto": "Egypt", "Escocia": "Scotland", 
-            "España": "Spain", "Estados Unidos": "USA", "Francia": "France", 
-            "Inglaterra": "England", "Japón": "Japan", "Marruecos": "Morocco", 
-            "México": "Mexico", "Países Bajos": "Netherlands", "Sudáfrica": "South Africa",
-            "Suecia": "Sweden", "Suiza": "Switzerland", "Turquía": "Turkey"
-        };
-
-        let eqA_EN = traducirPoly[eqA] || eqA;
-        let eqB_EN = traducirPoly[eqB] || eqB;
+        let eqA_EN = traducirMundial[eqA] || eqA;
+        let eqB_EN = traducirMundial[eqB] || eqB;
 
         let mktLocal, mktEmpate, mktVisit;
         
@@ -218,7 +214,7 @@
                 if (typeof tokens === 'string') tokens = JSON.parse(tokens);
                 mktLocal = parseFloat(tokens[0]); mktEmpate = parseFloat(tokens[1]); mktVisit = parseFloat(tokens[2]);
             } else {
-                throw new Error("Mercado financiero cerrado");
+                throw new Error("Mercado secundario");
             }
         } catch (error) {
             let diferenciaELO = eloA - eloB;
@@ -249,103 +245,3 @@
     function poisson(k, lambda) {
         return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
     }
-
-    async function ejecutarPrediccion() {
-        const eqA = document.getElementById('equipoA').value;
-        const eqB = document.getElementById('equipoB').value;
-        const btn = document.getElementById('btnPredecir');
-        const resultadosDiv = document.getElementById('resultados');
-
-        if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
-
-        btn.disabled = true;
-        btn.innerText = "Calculando métricas en vivo...";
-        resultadosDiv.style.display = 'none';
-        
-        const datos = await extraerDatos(eqA, eqB);
-
-        // Render Diagnóstico
-        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
-        document.getElementById('debugPoly').innerHTML = `<b>Mercado:</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
-        document.getElementById('debugPanel').style.display = 'block';
-
-        // --- MODELO: TASA DE GOLES DINÁMICA + ELO GOAL DIFFERENCE ---
-        
-        // 1. Calculamos el factor de disparidad
-        const diferenciaAbsoluta = Math.abs(datos.eloA - datos.eloB);
-        const factorDisparidad = diferenciaAbsoluta / 500; 
-
-        // 2. Calculamos el factor ofensivo global
-        const factorOfensivo = ((datos.eloA + datos.eloB) - 3600) / 2000;
-
-        // 3. Establecemos la tasa dinámica de goles para el partido
-        let golesTotales = 2.5 + factorDisparidad + factorOfensivo;
-
-        // Control de límites lógicos
-        if (golesTotales < 1.5) golesTotales = 1.5;
-        if (golesTotales > 4.5) golesTotales = 4.5;
-
-        // 4. Distribuimos el volumen de goles según la expectativa de ventaja
-        const diferenciaGolesEsperada = ((datos.eloA - datos.eloB) / 400) * 1.5;
-
-        let xgA = (golesTotales + diferenciaGolesEsperada) / 2;
-        let xgB = (golesTotales - diferenciaGolesEsperada) / 2;
-        
-        // Prevención de valores nulos
-        if (xgA < 0.1) xgA = 0.1;
-        if (xgB < 0.1) xgB = 0.1;
-
-        // Matriz de Poisson (0 a 6 goles)
-        let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
-        let maxProbExacta = 0;
-        let resExactoA = 0, resExactoB = 0;
-
-        for (let i = 0; i <= 6; i++) {
-            for (let j = 0; j <= 6; j++) {
-                let probEscenario = poisson(i, xgA) * poisson(j, xgB);
-
-                if (i > j) probLocalELO += probEscenario;
-                else if (i === j) probEmpateELO += probEscenario;
-                else probVisitanteELO += probEscenario;
-
-                if (probEscenario > maxProbExacta) {
-                    maxProbExacta = probEscenario;
-                    resExactoA = i;
-                    resExactoB = j;
-                }
-            }
-        }
-
-        // Ponderación (Blend) - 70% Mercado / 30% ELO
-        const alpha = 0.70; 
-        let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
-        let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
-        let pB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
-
-        let suma = pA + pE + pB;
-        pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
-
-        // Interfaz Gráfica
-        document.getElementById('lblA').innerText = eqA;
-        document.getElementById('lblB').innerText = eqB;
-        
-        document.getElementById('resA').innerText = pA.toFixed(1) + "%";
-        document.getElementById('resEmpate').innerText = pE.toFixed(1) + "%";
-        document.getElementById('resB').innerText = pB.toFixed(1) + "%";
-
-        document.getElementById('cardA').classList.remove('winner');
-        document.getElementById('cardB').classList.remove('winner');
-
-        if (pA > pB) document.getElementById('cardA').classList.add('winner');
-        if (pB > pA) document.getElementById('cardB').classList.add('winner');
-
-        document.getElementById('resultadoExacto').innerHTML = `Marcador más probable (Poisson): <br><b>${eqA} ${resExactoA} - ${resExactoB} ${eqB}</b>`;
-
-        btn.innerText = "Calcular Predicción Maestra";
-        btn.disabled = false;
-        resultadosDiv.style.display = 'block';
-    }
-</script>
-
-</body>
-</html>
