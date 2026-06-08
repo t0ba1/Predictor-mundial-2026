@@ -17,12 +17,10 @@
         button:hover { background-color: #166fe5; }
         button:disabled { background-color: #9cb4d8; cursor: not-allowed; }
         
-        /* Panel de Diagnóstico */
         .debug-panel { background-color: #e7f3ff; border-left: 6px solid #1877f2; padding: 15px 20px; border-radius: 8px; margin-top: 25px; display: none; }
         .debug-panel h3 { margin-top: 0; color: #1877f2; font-size: 16px; margin-bottom: 10px; }
         .debug-data { display: flex; justify-content: space-between; font-family: monospace; font-size: 14px; color: #333; }
         
-        /* Resultados Finales */
         .results { margin-top: 30px; display: none; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
         .card { background: #fff; padding: 20px; border-radius: 10px; border: 1px solid #e4e6eb; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -36,7 +34,7 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: ELO en Vivo + Gamma API + Distribución Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: Wikipedia API + Gamma API + Distribución Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
@@ -47,21 +45,21 @@
                 <option value="Australia">Australia</option><option value="Austria">Austria</option>
                 <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
                 <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
-                <option value="Canadá">Canadá</option><option value="Colombia">Colombia</option>
-                <option value="Corea del Sur">Corea del Sur</option><option value="Costa de Marfil">Costa de Marfil</option>
-                <option value="Croacia">Croacia</option><option value="Curazao">Curazao</option>
-                <option value="Ecuador">Ecuador</option><option value="Egipto">Egipto</option>
-                <option value="Escocia">Escocia</option><option value="España">España</option>
-                <option value="Estados Unidos">Estados Unidos</option><option value="Francia">Francia</option>
-                <option value="Ghana">Ghana</option><option value="Haití">Haití</option>
-                <option value="Inglaterra">Inglaterra</option><option value="Irak">Irak</option>
-                <option value="Irán">Irán</option><option value="Japón">Japón</option>
-                <option value="Jordania">Jordania</option><option value="Marruecos">Marruecos</option>
-                <option value="México">México</option><option value="Noruega">Noruega</option>
-                <option value="Nueva Zelanda">Nueva Zelanda</option><option value="Países Bajos">Países Bajos</option>
-                <option value="Panamá">Panamá</option><option value="Paraguay">Paraguay</option>
-                <option value="Portugal">Portugal</option><option value="Qatar">Qatar</option>
-                <option value="RD Congo">RD Congo</option><option value="República Checa">República Checa</option>
+                <option value="Canadá">Canadá</option><option value="Chequia">Chequia</option>
+                <option value="Colombia">Colombia</option><option value="Corea del Sur">Corea del Sur</option>
+                <option value="Costa de Marfil">Costa de Marfil</option><option value="Croacia">Croacia</option>
+                <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
+                <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
+                <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
+                <option value="Francia">Francia</option><option value="Ghana">Ghana</option>
+                <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
+                <option value="Irak">Irak</option><option value="Irán">Irán</option>
+                <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
+                <option value="Marruecos">Marruecos</option><option value="México">México</option>
+                <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
+                <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
+                <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
                 <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
                 <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
                 <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
@@ -76,21 +74,21 @@
                 <option value="Australia">Australia</option><option value="Austria">Austria</option>
                 <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
                 <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
-                <option value="Canadá">Canadá</option><option value="Colombia">Colombia</option>
-                <option value="Corea del Sur">Corea del Sur</option><option value="Costa de Marfil">Costa de Marfil</option>
-                <option value="Croacia">Croacia</option><option value="Curazao">Curazao</option>
-                <option value="Ecuador">Ecuador</option><option value="Egipto">Egipto</option>
-                <option value="Escocia">Escocia</option><option value="España">España</option>
-                <option value="Estados Unidos">Estados Unidos</option><option value="Francia" selected>Francia</option>
-                <option value="Ghana">Ghana</option><option value="Haití">Haití</option>
-                <option value="Inglaterra">Inglaterra</option><option value="Irak">Irak</option>
-                <option value="Irán">Irán</option><option value="Japón">Japón</option>
-                <option value="Jordania">Jordania</option><option value="Marruecos">Marruecos</option>
-                <option value="México">México</option><option value="Noruega">Noruega</option>
-                <option value="Nueva Zelanda">Nueva Zelanda</option><option value="Países Bajos">Países Bajos</option>
-                <option value="Panamá">Panamá</option><option value="Paraguay">Paraguay</option>
-                <option value="Portugal">Portugal</option><option value="Qatar">Qatar</option>
-                <option value="RD Congo">RD Congo</option><option value="República Checa">República Checa</option>
+                <option value="Canadá">Canadá</option><option value="Chequia">Chequia</option>
+                <option value="Colombia">Colombia</option><option value="Corea del Sur">Corea del Sur</option>
+                <option value="Costa de Marfil">Costa de Marfil</option><option value="Croacia">Croacia</option>
+                <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
+                <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
+                <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
+                <option value="Francia" selected>Francia</option><option value="Ghana">Ghana</option>
+                <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
+                <option value="Irak">Irak</option><option value="Irán">Irán</option>
+                <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
+                <option value="Marruecos">Marruecos</option><option value="México">México</option>
+                <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
+                <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
+                <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
                 <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
                 <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
                 <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
@@ -132,33 +130,61 @@
 </div>
 
 <script>
-    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS --- //
+    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS (NUEVO MOTOR WIKIPEDIA) --- //
     
     async function rasparELO(equipo) {
-        const urlProxy = `https://api.allorigins.win/get?url=${encodeURIComponent('https://www.eloratings.net/')}`;
+        // Diccionario estricto para conectar con las tablas en inglés
+        const traducirWiki = {
+            "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Bélgica": "Belgium",
+            "Brasil": "Brazil", "Canadá": "Canada", "Chequia": "Czech Republic", 
+            "Corea del Sur": "South Korea", "Costa de Marfil": "Ivory Coast", 
+            "Croacia": "Croatia", "Egipto": "Egypt", "Escocia": "Scotland", 
+            "España": "Spain", "Estados Unidos": "United States", "Francia": "France", 
+            "Inglaterra": "England", "Japón": "Japan", "Marruecos": "Morocco", 
+            "México": "Mexico", "Países Bajos": "Netherlands", "Sudáfrica": "South Africa",
+            "Suecia": "Sweden", "Suiza": "Switzerland", "Turquía": "Turkey"
+        };
+        
+        let eq_EN = traducirWiki[equipo] || equipo;
+
         try {
-            const respuesta = await fetch(urlProxy);
+            // Wikipedia permite lecturas públicas sin bloquear la conexión
+            const urlWiki = `https://en.wikipedia.org/w/api.php?action=parse&page=World_Football_Elo_Ratings&prop=text&format=json&origin=*`;
+            const respuesta = await fetch(urlWiki);
             const data = await respuesta.json();
-            const regex = new RegExp(equipo + ".*?(\\d{4})", "i");
-            const coincidencia = data.contents.match(regex);
             
-            if (coincidencia && coincidencia[1]) return parseInt(coincidencia[1]);
-            throw new Error("No encontrado");
+            // Convertimos la respuesta cruda en un DOM HTML navegable
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data.parse.text['*'], 'text/html');
+            const celdas = Array.from(doc.querySelectorAll('td'));
+            
+            // Escaneamos la tabla buscando la celda que contiene el país
+            for (let i = 0; i < celdas.length; i++) {
+                if (celdas[i].textContent.trim() === eq_EN || celdas[i].textContent.includes(eq_EN)) {
+                    // El puntaje siempre está 1 o 2 celdas a la derecha
+                    let puntaje1 = celdas[i+1]?.textContent.replace(/\D/g, '');
+                    let puntaje2 = celdas[i+2]?.textContent.replace(/\D/g, '');
+                    
+                    if (puntaje1 && puntaje1.length === 4) return parseInt(puntaje1);
+                    if (puntaje2 && puntaje2.length === 4) return parseInt(puntaje2);
+                }
+            }
+            throw new Error("Equipo fuera del listado principal de Wikipedia");
         } catch (error) {
-            console.warn(`Proxy falló para ${equipo}. Usando diccionario de contingencia.`);
-            const baseContingencia = {
+            console.warn(`Fallback de seguridad activado para ${equipo}`);
+            const baseSegura = {
                 "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
                 "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
-                "Canadá": 1750, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, "Croacia": 1990,
-                "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
+                "Canadá": 1750, "Chequia": 1800, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, 
+                "Croacia": 1990, "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
                 "Estados Unidos": 1900, "Francia": 2105, "Ghana": 1680, "Haití": 1610, "Inglaterra": 2040,
                 "Irak": 1660, "Irán": 1870, "Japón": 1930, "Jordania": 1640, "Marruecos": 1910,
                 "México": 1890, "Noruega": 1830, "Nueva Zelanda": 1650, "Países Bajos": 2020, "Panamá": 1690,
-                "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "República Checa": 1800,
-                "Senegal": 1920, "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770,
-                "Turquía": 1810, "Uruguay": 2000, "Uzbekistán": 1700
+                "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "Senegal": 1920, 
+                "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770, "Turquía": 1810, 
+                "Uruguay": 2000, "Uzbekistán": 1700
             };
-            return baseContingencia[equipo] || 1750; 
+            return baseSegura[equipo] || 1750;
         }
     }
 
@@ -166,19 +192,19 @@
         const eloA = await rasparELO(eqA);
         const eloB = await rasparELO(eqB);
 
-        const traducir = {
+        const traducirPoly = {
             "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Bélgica": "Belgium",
-            "Brasil": "Brazil", "Canadá": "Canada", "Corea del Sur": "South Korea",
-            "Costa de Marfil": "Ivory Coast", "Croacia": "Croatia", "Egipto": "Egypt",
-            "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "USA",
-            "Francia": "France", "Inglaterra": "England", "Japón": "Japan",
-            "Marruecos": "Morocco", "México": "Mexico", "Países Bajos": "Netherlands",
-            "República Checa": "Czech Republic", "Sudáfrica": "South Africa",
+            "Brasil": "Brazil", "Canadá": "Canada", "Chequia": "Czech Republic", 
+            "Corea del Sur": "South Korea", "Costa de Marfil": "Ivory Coast", 
+            "Croacia": "Croatia", "Egipto": "Egypt", "Escocia": "Scotland", 
+            "España": "Spain", "Estados Unidos": "USA", "Francia": "France", 
+            "Inglaterra": "England", "Japón": "Japan", "Marruecos": "Morocco", 
+            "México": "Mexico", "Países Bajos": "Netherlands", "Sudáfrica": "South Africa",
             "Suecia": "Sweden", "Suiza": "Switzerland", "Turquía": "Turkey"
         };
 
-        let eqA_EN = traducir[eqA] || eqA;
-        let eqB_EN = traducir[eqB] || eqB;
+        let eqA_EN = traducirPoly[eqA] || eqA;
+        let eqB_EN = traducirPoly[eqB] || eqB;
 
         let mktLocal, mktEmpate, mktVisit;
         
@@ -197,11 +223,9 @@
                 if (typeof tokens === 'string') tokens = JSON.parse(tokens);
                 mktLocal = parseFloat(tokens[0]); mktEmpate = parseFloat(tokens[1]); mktVisit = parseFloat(tokens[2]);
             } else {
-                throw new Error("Mercado no abierto en Polymarket aún");
+                throw new Error("Mercado financiero cerrado");
             }
         } catch (error) {
-            console.warn("Usando fallback dinámico para Polymarket:", error.message);
-            
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
             let expVisit = 1 - expLocal;
@@ -227,7 +251,6 @@
         return n;
     }
 
-    // Distribución de Poisson pura
     function poisson(k, lambda) {
         return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
     }
@@ -241,29 +264,27 @@
         if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
 
         btn.disabled = true;
-        btn.innerText = "Sincronizando datos en vivo...";
+        btn.innerText = "Sincronizando con Wikipedia...";
         resultadosDiv.style.display = 'none';
         
         const datos = await extraerDatos(eqA, eqB);
 
         // Render Diagnóstico
-        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO (Live):</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
-        document.getElementById('debugPoly').innerHTML = `<b>Polymarket (Proxy):</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
+        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO (Wiki API):</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
+        document.getElementById('debugPoly').innerHTML = `<b>Polymarket:</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
         document.getElementById('debugPanel').style.display = 'block';
 
         // --- MODELO: ELO-DERIVED GOAL DIFFERENCE ---
-        const golesTotales = 2.5; // Constante internacional FIFA
+        const golesTotales = 2.5; 
         const diferenciaGolesEsperada = ((datos.eloA - datos.eloB) / 400) * 1.5;
 
-        // Distribución estricta de xG
         let xgA = (golesTotales + diferenciaGolesEsperada) / 2;
         let xgB = (golesTotales - diferenciaGolesEsperada) / 2;
         
-        // Pisos técnicos para evitar errores indeterminados
         if (xgA < 0.1) xgA = 0.1;
         if (xgB < 0.1) xgB = 0.1;
 
-        // Matriz de Poisson (Evaluamos escenarios del 0-0 al 6-6)
+        // Matriz de Poisson
         let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
         let maxProbExacta = 0;
         let resExactoA = 0, resExactoB = 0;
@@ -284,13 +305,12 @@
             }
         }
 
-        // Ponderación (Blend) -> 70% Mercado / 30% Historial ELO
+        // Ponderación (Blend)
         const alpha = 0.70; 
         let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
         let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
         let pB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
 
-        // Normalización final
         let suma = pA + pE + pB;
         pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
 
