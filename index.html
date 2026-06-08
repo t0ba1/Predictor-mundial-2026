@@ -34,7 +34,7 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: Wikipedia API + Gamma API + Tasa Poisson Dinámica</p>
+    <p class="subtitle">Motor Cuantitativo: ELO + Expectativa Logística + Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
@@ -130,7 +130,6 @@
 </div>
 
 <script>
-    // --- DICCIONARIO MAESTRO DE TRADUCCIÓN (48 SELECCIONES) --- //
     const traducirMundial = {
         "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Argelia": "Algeria",
         "Australia": "Australia", "Austria": "Austria", "Bélgica": "Belgium",
@@ -144,12 +143,11 @@
         "Marruecos": "Morocco", "México": "Mexico", "Noruega": "Norway",
         "Nueva Zelanda": "New Zealand", "Países Bajos": "Netherlands", "Panamá": "Panama",
         "Paraguay": "Paraguay", "Portugal": "Portugal", "Qatar": "Qatar",
-        "RD Congo": "Congo", "Senegal": "Senegal", "Sudáfrica": "South Africa",
+        "RD Congo": "DR Congo", "Senegal": "Senegal", "Sudáfrica": "South Africa",
         "Suecia": "Sweden", "Suiza": "Switzerland", "Túnez": "Tunisia", 
         "Turquía": "Turkey", "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
     };
 
-    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS --- //
     async function rasparELO(equipo) {
         let eq_EN = traducirMundial[equipo] || equipo;
 
@@ -171,7 +169,7 @@
                     if (puntaje2 && puntaje2.length === 4) return parseInt(puntaje2);
                 }
             }
-            throw new Error("No encontrado en la tabla principal");
+            throw new Error("No encontrado");
         } catch (error) {
             console.warn(`Fallback activado para ${equipo}`);
             const baseSegura = {
@@ -214,7 +212,7 @@
                 if (typeof tokens === 'string') tokens = JSON.parse(tokens);
                 mktLocal = parseFloat(tokens[0]); mktEmpate = parseFloat(tokens[1]); mktVisit = parseFloat(tokens[2]);
             } else {
-                throw new Error("Mercado secundario");
+                throw new Error("Mercado cerrado");
             }
         } catch (error) {
             let diferenciaELO = eloA - eloB;
@@ -235,7 +233,6 @@
         return { eloA, eloB, mktLocal, mktEmpate, mktVisit };
     }
 
-    // --- 2. MOTOR MATEMÁTICO --- //
     function factorial(n) {
         if (n === 0 || n === 1) return 1;
         for (var i = n - 1; i >= 1; i--) { n *= i; }
@@ -245,3 +242,97 @@
     function poisson(k, lambda) {
         return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
     }
+
+    async function ejecutarPrediccion() {
+        const eqA = document.getElementById('equipoA').value;
+        const eqB = document.getElementById('equipoB').value;
+        const btn = document.getElementById('btnPredecir');
+        const resultadosDiv = document.getElementById('resultados');
+
+        if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
+
+        btn.disabled = true;
+        btn.innerText = "Calculando curvas logísticas...";
+        resultadosDiv.style.display = 'none';
+        
+        const datos = await extraerDatos(eqA, eqB);
+
+        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
+        document.getElementById('debugPoly').innerHTML = `<b>Mercado Implícito:</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
+        document.getElementById('debugPanel').style.display = 'block';
+
+        // --- MOTOR MATEMÁTICO CORREGIDO: CURVA LOGÍSTICA ---
+        
+        // 1. Goles Totales del Partido (Base 2.3 + Bonus por disparidad y poder ofensivo)
+        const diferenciaAbsoluta = Math.abs(datos.eloA - datos.eloB);
+        let golesTotales = 2.3 + (diferenciaAbsoluta / 400) + Math.max(0, ((datos.eloA + datos.eloB) - 3500) / 2000);
+
+        if (golesTotales < 1.5) golesTotales = 1.5;
+        if (golesTotales > 4.5) golesTotales = 4.5;
+
+        // 2. Expectativa Real de Victoria (Logística ELO Base 10)
+        let expectativaA = 1 / (1 + Math.pow(10, -(datos.eloA - datos.eloB) / 400));
+        let expectativaB = 1 - expectativaA;
+
+        // 3. Distribución de Goles Esperados (xG) multiplicando la expectativa por el total
+        let xgA = golesTotales * expectativaA;
+        let xgB = golesTotales * expectativaB;
+        
+        if (xgA < 0.1) xgA = 0.1;
+        if (xgB < 0.1) xgB = 0.1;
+
+        // Matriz de Poisson (0 a 6 goles)
+        let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
+        let maxProbExacta = 0;
+        let resExactoA = 0, resExactoB = 0;
+
+        for (let i = 0; i <= 6; i++) {
+            for (let j = 0; j <= 6; j++) {
+                let probEscenario = poisson(i, xgA) * poisson(j, xgB);
+
+                if (i > j) probLocalELO += probEscenario;
+                else if (i === j) probEmpateELO += probEscenario;
+                else probVisitanteELO += probEscenario;
+
+                // Capturamos el resultado exacto más alto
+                if (probEscenario > maxProbExacta) {
+                    maxProbExacta = probEscenario;
+                    resExactoA = i;
+                    resExactoB = j;
+                }
+            }
+        }
+
+        // Ponderación (Blend) - 70% Mercado / 30% ELO
+        const alpha = 0.70; 
+        let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
+        let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
+        let pB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
+
+        let suma = pA + pE + pB;
+        pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
+
+        // Interfaz Gráfica
+        document.getElementById('lblA').innerText = eqA;
+        document.getElementById('lblB').innerText = eqB;
+        
+        document.getElementById('resA').innerText = pA.toFixed(1) + "%";
+        document.getElementById('resEmpate').innerText = pE.toFixed(1) + "%";
+        document.getElementById('resB').innerText = pB.toFixed(1) + "%";
+
+        document.getElementById('cardA').classList.remove('winner');
+        document.getElementById('cardB').classList.remove('winner');
+
+        if (pA > pB) document.getElementById('cardA').classList.add('winner');
+        if (pB > pA) document.getElementById('cardB').classList.add('winner');
+
+        document.getElementById('resultadoExacto').innerHTML = `Marcador más probable (Poisson): <br><b>${eqA} ${resExactoA} - ${resExactoB} ${eqB}</b>`;
+
+        btn.innerText = "Calcular Predicción Maestra";
+        btn.disabled = false;
+        resultadosDiv.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
