@@ -346,4 +346,63 @@
         if (golesTotales < 1.5) golesTotales = 1.5;
         if (golesTotales > 4.5) golesTotales = 4.5;
 
-        let expectativaA = 1 / (1 + Math.pow(10, -(datos.eloA - datos.
+        let expectativaA = 1 / (1 + Math.pow(10, -(datos.eloA - datos.eloB) / 400));
+        let expectativaB = 1 - expectativaA;
+
+        let xgA = golesTotales * expectativaA;
+        let xgB = golesTotales * expectativaB;
+        
+        if (xgA < 0.1) xgA = 0.1;
+        if (xgB < 0.1) xgB = 0.1;
+
+        let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
+        let maxProbExacta = 0;
+        let resExactoA = 0, resExactoB = 0;
+
+        for (let i = 0; i <= 6; i++) {
+            for (let j = 0; j <= 6; j++) {
+                let probEscenario = poisson(i, xgA) * poisson(j, xgB);
+
+                if (i > j) probLocalELO += probEscenario;
+                else if (i === j) probEmpateELO += probEscenario;
+                else probVisitanteELO += probEscenario;
+
+                if (probEscenario > maxProbExacta) {
+                    maxProbExacta = probEscenario;
+                    resExactoA = i;
+                    resExactoB = j;
+                }
+            }
+        }
+
+        const alpha = 0.70; 
+        let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
+        let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
+        let pB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
+
+        let suma = pA + pE + pB;
+        pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
+
+        document.getElementById('lblA').innerText = eqA;
+        document.getElementById('lblB').innerText = eqB;
+        
+        document.getElementById('resA').innerText = pA.toFixed(1) + "%";
+        document.getElementById('resEmpate').innerText = pE.toFixed(1) + "%";
+        document.getElementById('resB').innerText = pB.toFixed(1) + "%";
+
+        document.getElementById('cardA').classList.remove('winner');
+        document.getElementById('cardB').classList.remove('winner');
+
+        if (pA > pB) document.getElementById('cardA').classList.add('winner');
+        if (pB > pA) document.getElementById('cardB').classList.add('winner');
+
+        document.getElementById('resultadoExacto').innerHTML = `Marcador más probable (Poisson): <br><b>${eqA} ${resExactoA} - ${resExactoB} ${eqB}</b>`;
+
+        btn.innerText = "Calcular Predicción Maestra";
+        btn.disabled = false;
+        resultadosDiv.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
