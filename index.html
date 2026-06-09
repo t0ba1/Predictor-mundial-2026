@@ -34,43 +34,14 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: ELO + Expectativa Logística + Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: ELO + Búsqueda Estructural API + Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
             <label for="equipoA">Equipo Local (A)</label>
             <select id="equipoA">
                 <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
-                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
-                <option value="Australia">Australia</option><option value="Austria">Austria</option>
-                <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
-                <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
-                <option value="Canadá">Canadá</option><option value="Chequia">Chequia</option>
-                <option value="Colombia">Colombia</option><option value="Corea del Sur">Corea del Sur</option>
-                <option value="Costa de Marfil">Costa de Marfil</option><option value="Croacia">Croacia</option>
-                <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
-                <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
-                <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
-                <option value="Francia">Francia</option><option value="Ghana">Ghana</option>
-                <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
-                <option value="Irak">Irak</option><option value="Irán">Irán</option>
-                <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
-                <option value="Marruecos">Marruecos</option><option value="México" selected>México</option>
-                <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
-                <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
-                <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
-                <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
-                <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
-                <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
-                <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
-                <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
-            </select>
-        </div>
-        <div class="selector-group">
-            <label for="equipoB">Equipo Visitante (B)</label>
-            <select id="equipoB">
-                <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
-                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
+                <option value="Argelia">Argelia</option><option value="Argentina" selected>Argentina</option>
                 <option value="Australia">Australia</option><option value="Austria">Austria</option>
                 <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
                 <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
@@ -89,7 +60,36 @@
                 <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
                 <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
                 <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
-                <option value="Senegal">Senegal</option><option value="Sudáfrica" selected>Sudáfrica</option>
+                <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
+                <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
+                <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
+                <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
+            </select>
+        </div>
+        <div class="selector-group">
+            <label for="equipoB">Equipo Visitante (B)</label>
+            <select id="equipoB">
+                <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
+                <option value="Argelia" selected>Argelia</option><option value="Argentina">Argentina</option>
+                <option value="Australia">Australia</option><option value="Austria">Austria</option>
+                <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
+                <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
+                <option value="Canadá">Canadá</option><option value="Chequia">Chequia</option>
+                <option value="Colombia">Colombia</option><option value="Corea del Sur">Corea del Sur</option>
+                <option value="Costa de Marfil">Costa de Marfil</option><option value="Croacia">Croacia</option>
+                <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
+                <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
+                <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
+                <option value="Francia">Francia</option><option value="Ghana">Ghana</option>
+                <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
+                <option value="Irak">Irak</option><option value="Irán">Irán</option>
+                <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
+                <option value="Marruecos">Marruecos</option><option value="México">México</option>
+                <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
+                <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
+                <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
+                <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
                 <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
                 <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
                 <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
@@ -130,7 +130,6 @@
 </div>
 
 <script>
-    // --- DICCIONARIO MAESTRO --- //
     const traducirMundial = {
         "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Argelia": "Algeria",
         "Australia": "Australia", "Austria": "Austria", "Bélgica": "Belgium",
@@ -138,7 +137,7 @@
         "Cabo Verde": "Cape Verde", "Canadá": "Canada", "Chequia": "Czech Republic",
         "Colombia": "Colombia", "Corea del Sur": "South Korea", "Costa de Marfil": "Ivory Coast",
         "Croacia": "Croatia", "Curazao": "Curaçao", "Ecuador": "Ecuador", "Egipto": "Egypt",
-        "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "United States",
+        "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "USA",
         "Francia": "France", "Ghana": "Ghana", "Haití": "Haiti", "Inglaterra": "England",
         "Irak": "Iraq", "Irán": "Iran", "Japón": "Japan", "Jordania": "Jordan",
         "Marruecos": "Morocco", "México": "Mexico", "Noruega": "Norway",
@@ -149,105 +148,105 @@
         "Turquía": "Turkey", "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
     };
 
-    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS --- //
+    // --- 1. EXTRACCIÓN ELO --- //
     async function rasparELO(equipo) {
-        let eq_EN = traducirMundial[equipo] || equipo;
-
+        let eq_EN = equipo === "Estados Unidos" ? "United States" : (traducirMundial[equipo] || equipo);
         try {
             const urlWiki = `https://en.wikipedia.org/w/api.php?action=parse&page=World_Football_Elo_Ratings&prop=text&format=json&origin=*`;
             const respuesta = await fetch(urlWiki);
             const data = await respuesta.json();
-            
             const parser = new DOMParser();
             const doc = parser.parseFromString(data.parse.text['*'], 'text/html');
             const celdas = Array.from(doc.querySelectorAll('td'));
-            
             for (let i = 0; i < celdas.length; i++) {
                 if (celdas[i].textContent.trim() === eq_EN || celdas[i].textContent.includes(eq_EN)) {
                     let puntaje1 = celdas[i+1]?.textContent.replace(/\D/g, '');
                     let puntaje2 = celdas[i+2]?.textContent.replace(/\D/g, '');
-                    
                     if (puntaje1 && puntaje1.length === 4) return parseInt(puntaje1);
                     if (puntaje2 && puntaje2.length === 4) return parseInt(puntaje2);
                 }
             }
             throw new Error("No encontrado");
         } catch (error) {
-            console.warn(`Fallback activado para ${equipo}`);
-            // Backup por si Wikipedia cambia la tabla
-            const baseSegura = {
-                "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
-                "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
-                "Canadá": 1750, "Chequia": 1800, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, 
-                "Croacia": 1990, "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
-                "Estados Unidos": 1900, "Francia": 2105, "Ghana": 1680, "Haití": 1610, "Inglaterra": 2040,
-                "Irak": 1660, "Irán": 1870, "Japón": 1930, "Jordania": 1640, "Marruecos": 1910,
-                "México": 1890, "Noruega": 1830, "Nueva Zelanda": 1650, "Países Bajos": 2020, "Panamá": 1690,
-                "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "Senegal": 1920, 
-                "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770, "Turquía": 1810, 
-                "Uruguay": 2000, "Uzbekistán": 1700
-            };
-            return baseSegura[equipo] || 1750;
+            console.warn(`Fallback ELO activado para ${equipo}`);
+            return 1750; // Promedio base por contingencia
         }
     }
 
+    // --- 2. BÚSQUEDA ESTRUCTURAL EN POLYMARKET --- //
     async function extraerDatos(eqA, eqB) {
         const eloA = await rasparELO(eqA);
         const eloB = await rasparELO(eqB);
 
-        // Aclaración de nomenclatura: Polymarket usa "USA" en vez de "United States"
-        let eqA_EN = eqA === "Estados Unidos" ? "USA" : (traducirMundial[eqA] || eqA);
-        let eqB_EN = eqB === "Estados Unidos" ? "USA" : (traducirMundial[eqB] || eqB);
+        let eqA_EN = traducirMundial[eqA] || eqA;
+        let eqB_EN = traducirMundial[eqB] || eqB;
 
         let mktLocal, mktEmpate, mktVisit;
+        let mercadoRealEncontrado = false;
         
         try {
-            // CONEXIÓN DIRECTA A LA GAMMA API DE POLYMARKET (SIN PROXY)
-            // Agregamos limit=100 y active=true para evitar el límite de paginación que nos ocultaba los resultados
+            // Buscamos cualquier evento que mencione al equipo A para achicar la base de datos
             const urlPoly = `https://gamma-api.polymarket.com/events?search=${encodeURIComponent(eqA_EN)}&active=true&closed=false&limit=100`;
-            
             const respuesta = await fetch(urlPoly);
-            if (!respuesta.ok) throw new Error("Cloudflare o la API rechazó la solicitud");
-            const data = await respuesta.json();
+            const eventos = await respuesta.json();
             
-            // Búsqueda inteligente: recorremos los 100 resultados buscando el string de ambos equipos
-            const mercado = data.find(evento => 
-                evento.title && 
-                evento.title.toLowerCase().includes(eqB_EN.toLowerCase()) &&
-                evento.title.toLowerCase().includes(eqA_EN.toLowerCase())
-            );
-            
-            if (mercado && mercado.markets && mercado.markets.length > 0) {
-                // Buscamos el mercado principal 1x2 (Gana, Empata, Pierde)
-                const mercadoPrincipal = mercado.markets.find(m => m.outcomes && m.outcomes.length >= 3) || mercado.markets[0];
+            let mercadoObjetivo = null;
+
+            // Análisis Estructural: Ignoramos los títulos. Buscamos directamente en las opciones de apuesta (outcomes)
+            for (let evento of eventos) {
+                if (!evento.markets) continue;
+
+                for (let mercado of evento.markets) {
+                    let opciones = mercado.outcomes;
+                    if (typeof opciones === 'string') {
+                        try { opciones = JSON.parse(opciones); } catch(e) { continue; }
+                    }
+
+                    if (Array.isArray(opciones)) {
+                        let opcionesLower = opciones.map(o => o.toLowerCase());
+                        
+                        // ¿Está la gente apostando por el Equipo A Y el Equipo B en este mercado exacto?
+                        let tieneEquipoA = opcionesLower.some(o => o.includes(eqA_EN.toLowerCase()));
+                        let tieneEquipoB = opcionesLower.some(o => o.includes(eqB_EN.toLowerCase()));
+
+                        if (tieneEquipoA && tieneEquipoB) {
+                            mercadoObjetivo = mercado;
+                            break; // Encontramos la aguja en el pajar
+                        }
+                    }
+                }
+                if (mercadoObjetivo) break;
+            }
+
+            if (mercadoObjetivo) {
+                let precios = mercadoObjetivo.outcomePrices;
+                let opciones = mercadoObjetivo.outcomes;
                 
-                let precios = mercadoPrincipal.outcomePrices;
-                let opciones = mercadoPrincipal.outcomes;
-                
-                // Formateo de JSON crudo
                 if (typeof precios === 'string') precios = JSON.parse(precios);
                 if (typeof opciones === 'string') opciones = JSON.parse(opciones);
                 
-                // Mapeo seguro cruzando strings con índices (para evitar que Polymarket desordene los valores)
-                for (let i = 0; i < opciones.length; i++) {
-                    let opcion = opciones[i].toLowerCase();
+                let opcionesLower = opciones.map(o => o.toLowerCase());
+
+                // Mapeo milimétrico de precios asegurando que coincida el índice del array
+                for (let i = 0; i < opcionesLower.length; i++) {
+                    let opcion = opcionesLower[i];
                     if (opcion.includes(eqA_EN.toLowerCase())) mktLocal = parseFloat(precios[i]);
-                    else if (opcion === "draw" || opcion === "empate" || opcion === "tie") mktEmpate = parseFloat(precios[i]);
-                    else mktVisit = parseFloat(precios[i]);
+                    else if (opcion.includes(eqB_EN.toLowerCase())) mktVisit = parseFloat(precios[i]);
+                    else if (opcion.includes("draw") || opcion.includes("tie")) mktEmpate = parseFloat(precios[i]);
                 }
                 
-                // Respaldo por si falló el cruce de strings
-                if (!mktLocal || !mktVisit || !mktEmpate) {
-                    mktLocal = parseFloat(precios[0]);
-                    mktEmpate = parseFloat(precios[1]);
-                    mktVisit = parseFloat(precios[2]);
+                if (mktLocal !== undefined && mktVisit !== undefined && mktEmpate !== undefined) {
+                    mercadoRealEncontrado = true;
                 }
-            } else {
-                throw new Error("Partido no encontrado en el bloque de mercados activos");
             }
+
+            if (!mercadoRealEncontrado) {
+                throw new Error("El partido no existe actualmente en el mercado de apuestas.");
+            }
+            
         } catch (error) {
-            console.warn("Mercado ausente. Usando Fallback Matemático:", error.message);
-            // El plan de emergencia matemático solo entra si el evento no existe en Polymarket
+            console.warn("Usando Fallback Matemático:", error.message);
+            // El fallback se activa SOLO si el mercado no existe aún (ej. faltan años para el partido)
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
             let expVisit = 1 - expLocal;
@@ -263,10 +262,10 @@
             mktLocal += varianza; mktVisit -= varianza;
         }
 
-        return { eloA, eloB, mktLocal, mktEmpate, mktVisit };
+        return { eloA, eloB, mktLocal, mktEmpate, mktVisit, mercadoRealEncontrado };
     }
 
-    // --- 2. MOTOR MATEMÁTICO --- //
+    // --- 3. MOTOR DE POISSON --- //
     function factorial(n) {
         if (n === 0 || n === 1) return 1;
         for (var i = n - 1; i >= 1; i--) { n *= i; }
@@ -286,37 +285,31 @@
         if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
 
         btn.disabled = true;
-        btn.innerText = "Conectando a Polymarket Gamma API...";
+        btn.innerText = "Escaneando estructura de Polymarket...";
         resultadosDiv.style.display = 'none';
         
         const datos = await extraerDatos(eqA, eqB);
 
-        // Render Panel Diagnóstico
+        let etiquetaMercado = datos.mercadoRealEncontrado ? "Mercado Real (Extracción por Outcomes):" : "Mercado Simulado (Aún no listado):";
         document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
-        document.getElementById('debugPoly').innerHTML = `<b>Mercado Real (API):</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
+        document.getElementById('debugPoly').innerHTML = `<b>${etiquetaMercado}</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
         document.getElementById('debugPanel').style.display = 'block';
 
-        // --- MOTOR MATEMÁTICO: CURVA LOGÍSTICA ---
-        
-        // 1. Goles Totales del Partido
         const diferenciaAbsoluta = Math.abs(datos.eloA - datos.eloB);
         let golesTotales = 2.3 + (diferenciaAbsoluta / 400) + Math.max(0, ((datos.eloA + datos.eloB) - 3500) / 2000);
 
         if (golesTotales < 1.5) golesTotales = 1.5;
         if (golesTotales > 4.5) golesTotales = 4.5;
 
-        // 2. Expectativa Logística
         let expectativaA = 1 / (1 + Math.pow(10, -(datos.eloA - datos.eloB) / 400));
         let expectativaB = 1 - expectativaA;
 
-        // 3. Distribución
         let xgA = golesTotales * expectativaA;
         let xgB = golesTotales * expectativaB;
         
         if (xgA < 0.1) xgA = 0.1;
         if (xgB < 0.1) xgB = 0.1;
 
-        // Matriz de Poisson
         let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
         let maxProbExacta = 0;
         let resExactoA = 0, resExactoB = 0;
@@ -337,7 +330,6 @@
             }
         }
 
-        // Ponderación (Blend) - 70% Mercado / 30% ELO
         const alpha = 0.70; 
         let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
         let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
@@ -346,7 +338,6 @@
         let suma = pA + pE + pB;
         pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
 
-        // Interfaz Gráfica
         document.getElementById('lblA').innerText = eqA;
         document.getElementById('lblB').innerText = eqB;
         
