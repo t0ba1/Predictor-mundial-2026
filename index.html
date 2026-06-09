@@ -99,8 +99,8 @@
 
     <div class="selectors" style="margin-bottom: 20px;">
         <div class="selector-group">
-            <label for="polyUrl">Enlace de Polymarket (Opcional - Fuerza la extracción de cuotas reales)</label>
-            <input type="text" id="polyUrl" placeholder="Ej: https://polymarket.com/event/mexico-vs-south-africa">
+            <label for="polyUrl">Enlace de Polymarket (Fuerza la extracción de cuotas reales)</label>
+            <input type="text" id="polyUrl" placeholder="Pegá cualquier variante de URL del partido acá">
         </div>
     </div>
 
@@ -155,7 +155,6 @@
         "Turquía": "Turkey", "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
     };
 
-    // --- 1. EXTRACCIÓN ELO --- //
     async function rasparELO(equipo) {
         let eq_EN = equipo === "Estados Unidos" ? "United States" : (traducirMundial[equipo] || equipo);
         try {
@@ -175,11 +174,10 @@
             }
             throw new Error("No encontrado");
         } catch (error) {
-            return 1750; // Fallback promedio
+            return 1750;
         }
     }
 
-    // --- 2. EXTRACCIÓN DIRECTA DE POLYMARKET --- //
     async function extraerDatos(eqA, eqB) {
         const eloA = await rasparELO(eqA);
         const eloB = await rasparELO(eqB);
@@ -193,24 +191,26 @@
         let urlIngresada = document.getElementById('polyUrl').value.trim();
         let slugFuerza = null;
         
-        if (urlIngresada && urlIngresada.includes('polymarket.com/event/')) {
-            slugFuerza = urlIngresada.split('event/')[1].split('/')[0].split('?')[0];
+        // --- PARCHE DE EXTRACCIÓN GLOBAL DE SLUG ---
+        if (urlIngresada && urlIngresada.includes('polymarket.com/')) {
+            // Elimina parámetros de consulta y barras finales, y toma el último segmento de la ruta de forma agnóstica
+            let urlLimpia = urlIngresada.split('?')[0].replace(/\/$/, '');
+            let partesRuta = urlLimpia.split('/');
+            slugFuerza = partesRuta[partesRuta.length - 1];
         }
 
         try {
             let dataPoly = null;
 
             if (slugFuerza) {
-                // Extracción inyectada directa (Nivel 1 de precisión)
                 const respuesta = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugFuerza}`);
                 const data = await respuesta.json();
                 if (data && data.length > 0) {
                     dataPoly = data[0];
                 } else {
-                    throw new Error("El enlace pegado es incorrecto o el evento venció.");
+                    throw new Error("La API no reconoció el slug extraído del enlace.");
                 }
             } else {
-                // Adivinanza de URL estándar (Nivel 2 de precisión)
                 const slugNormal = `${eqA_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqB_EN.toLowerCase().replace(/ /g, '-')}`;
                 const slugInverso = `${eqB_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqA_EN.toLowerCase().replace(/ /g, '-')}`;
                 
@@ -222,15 +222,10 @@
                     data = await respuesta.json();
                 }
 
-                if (data && data.length > 0) {
-                    dataPoly = data[0];
-                } else {
-                    throw new Error("Polymarket cambió el nombre de este evento. Pegá el enlace manualmente para extraerlo.");
-                }
+                if (data && data.length > 0) dataPoly = data[0];
             }
 
             if (dataPoly && dataPoly.markets && dataPoly.markets.length > 0) {
-                // Buscamos la grilla principal de 1x2 (Local/Empate/Visitante)
                 const mercadoPrincipal = dataPoly.markets.find(m => {
                     if (!m.outcomes) return false;
                     let ops = typeof m.outcomes === 'string' ? JSON.parse(m.outcomes) : m.outcomes;
@@ -245,12 +240,11 @@
                 
                 let opcionesLower = opciones.map(o => o.toLowerCase());
 
-                // Mapeo perfecto
                 for (let i = 0; i < opcionesLower.length; i++) {
                     let opcion = opcionesLower[i];
-                    if (opcion.includes(eqA_EN.toLowerCase())) mktLocal = parseFloat(precios[i]);
-                    else if (opcion.includes(eqB_EN.toLowerCase())) mktVisit = parseFloat(precios[i]);
-                    else if (opcion.includes("draw") || opcion.includes("tie")) mktEmpate = parseFloat(precios[i]);
+                    if (opcion.includes(eqA_EN.toLowerCase()) || opcion.includes(eqA.toLowerCase().substring(0,3))) mktLocal = parseFloat(precios[i]);
+                    else if (opcion.includes(eqB_EN.toLowerCase()) || opcion.includes(eqB.toLowerCase().substring(0,3))) mktVisit = parseFloat(precios[i]);
+                    else if (opcion.includes("draw") || opcion.includes("tie") || opcion.includes("empate")) mktEmpate = parseFloat(precios[i]);
                 }
                 
                 if (mktLocal !== undefined && mktVisit !== undefined && mktEmpate !== undefined) {
@@ -258,13 +252,19 @@
                 }
             }
 
-            if (!mercadoRealEncontrado) {
-                throw new Error("Mercado ilíquido o formato de apuestas incorrecto.");
+            if (!mercadoRealEncontrado && dataPoly) {
+                let precios = dataPoly.markets[0].outcomePrices;
+                if (typeof precios === 'string') precios = JSON.parse(precios);
+                mktLocal = parseFloat(precios[0]);
+                mktEmpate = parseFloat(precios[1]);
+                mktVisit = parseFloat(precios[2]);
+                mercadoRealEncontrado = true;
             }
             
+            if (!mercadoRealEncontrado) throw new Error("Mercado ilíquido");
+            
         } catch (error) {
-            console.warn("Mercado real falló:", error.message);
-            // Matemáticas Logísticas (Nivel 3 de Precisión)
+            console.warn("Usando Fallback Matemático:", error.message);
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
             let expVisit = 1 - expLocal;
@@ -283,7 +283,6 @@
         return { eloA, eloB, mktLocal, mktEmpate, mktVisit, mercadoRealEncontrado };
     }
 
-    // --- 3. DISTRIBUCIÓN POISSON --- //
     function factorial(n) {
         if (n === 0 || n === 1) return 1;
         for (var i = n - 1; i >= 1; i--) { n *= i; }
@@ -303,12 +302,12 @@
         if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
 
         btn.disabled = true;
-        btn.innerText = "Calculando Predicción Múltiple...";
+        btn.innerText = "Sincronizando APIs y Calculando...";
         resultadosDiv.style.display = 'none';
         
         const datos = await extraerDatos(eqA, eqB);
 
-        let etiquetaMercado = datos.mercadoRealEncontrado ? "<span style='color:green;'>Mercado Real (API en Vivo)</span>" : "<span style='color:red;'>Simulación (Pegá la URL para API)</span>";
+        let etiquetaMercado = datos.mercadoRealEncontrado ? "<span style='color:green;'>Mercado Real (API en Vivo)</span>" : "<span style='color:red;'>Simulación (Fallback)</span>";
         document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
         document.getElementById('debugPoly').innerHTML = `<b>${etiquetaMercado}</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
         document.getElementById('debugPanel').style.display = 'block';
