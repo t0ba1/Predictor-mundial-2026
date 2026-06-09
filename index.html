@@ -144,7 +144,7 @@
         "Cabo Verde": "Cape Verde", "Canadá": "Canada", "Chequia": "Czech Republic",
         "Colombia": "Colombia", "Corea del Sur": "South Korea", "Costa de Marfil": "Ivory Coast",
         "Croacia": "Croatia", "Curazao": "Curaçao", "Ecuador": "Ecuador", "Egipto": "Egypt",
-        "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "USA",
+        "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "United States",
         "Francia": "France", "Ghana": "Ghana", "Haití": "Haiti", "Inglaterra": "England",
         "Irak": "Iraq", "Irán": "Iran", "Japón": "Japan", "Jordania": "Jordan",
         "Marruecos": "Morocco", "México": "Mexico", "Noruega": "Norway",
@@ -191,47 +191,38 @@
         let urlIngresada = document.getElementById('polyUrl').value.trim();
         let slugFuerza = null;
         
-        // --- PARCHE DE EXTRACCIÓN GLOBAL DE SLUG ---
         if (urlIngresada && urlIngresada.includes('polymarket.com/')) {
-            // Elimina parámetros de consulta y barras finales, y toma el último segmento de la ruta de forma agnóstica
             let urlLimpia = urlIngresada.split('?')[0].replace(/\/$/, '');
             let partesRuta = urlLimpia.split('/');
             slugFuerza = partesRuta[partesRuta.length - 1];
         }
 
         try {
-            let dataPoly = null;
+            let mercadoPrincipal = null;
 
             if (slugFuerza) {
-                const respuesta = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugFuerza}`);
-                const data = await respuesta.json();
-                if (data && data.length > 0) {
-                    dataPoly = data[0];
-                } else {
-                    throw new Error("La API no reconoció el slug extraído del enlace.");
-                }
-            } else {
-                const slugNormal = `${eqA_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqB_EN.toLowerCase().replace(/ /g, '-')}`;
-                const slugInverso = `${eqB_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqA_EN.toLowerCase().replace(/ /g, '-')}`;
-                
-                let respuesta = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugNormal}`);
-                let data = await respuesta.json();
-                
-                if (!data || data.length === 0) {
-                    respuesta = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugInverso}`);
-                    data = await respuesta.json();
+                // INTENTO 1: Buscar como Slugs de Mercados Individuales de la API (Caso del link actual)
+                let resM = await fetch(`https://gamma-api.polymarket.com/markets?slug=${slugFuerza}`);
+                if (resM.ok) {
+                    let dataM = await resM.ok ? await resM.json() : null;
+                    let m = Array.isArray(dataM) ? dataM[0] : dataM;
+                    if (m && m.outcomePrices) mercadoPrincipal = m;
                 }
 
-                if (data && data.length > 0) dataPoly = data[0];
+                // INTENTO 2: Si falló, buscar como Slug de Evento tradicional
+                if (!mercadoPrincipal) {
+                    let resE = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugFuerza}`);
+                    if (resE.ok) {
+                        let dataE = await resE.json();
+                        let e = Array.isArray(dataE) ? dataE[0] : dataE;
+                        if (e && e.markets && e.markets.length > 0) {
+                            mercadoPrincipal = e.markets.find(m => m.outcomes && (typeof m.outcomes === 'string' ? JSON.parse(m.outcomes) : m.outcomes).length >= 3) || e.markets[0];
+                        }
+                    }
+                }
             }
 
-            if (dataPoly && dataPoly.markets && dataPoly.markets.length > 0) {
-                const mercadoPrincipal = dataPoly.markets.find(m => {
-                    if (!m.outcomes) return false;
-                    let ops = typeof m.outcomes === 'string' ? JSON.parse(m.outcomes) : m.outcomes;
-                    return Array.isArray(ops) && ops.length >= 3;
-                }) || dataPoly.markets[0];
-                
+            if (mercadoPrincipal) {
                 let precios = mercadoPrincipal.outcomePrices;
                 let opciones = mercadoPrincipal.outcomes;
                 
@@ -240,31 +231,31 @@
                 
                 let opcionesLower = opciones.map(o => o.toLowerCase());
 
+                // Mapeo inteligente de los índices de la API
                 for (let i = 0; i < opcionesLower.length; i++) {
                     let opcion = opcionesLower[i];
-                    if (opcion.includes(eqA_EN.toLowerCase()) || opcion.includes(eqA.toLowerCase().substring(0,3))) mktLocal = parseFloat(precios[i]);
-                    else if (opcion.includes(eqB_EN.toLowerCase()) || opcion.includes(eqB.toLowerCase().substring(0,3))) mktVisit = parseFloat(precios[i]);
-                    else if (opcion.includes("draw") || opcion.includes("tie") || opcion.includes("empate")) mktEmpate = parseFloat(precios[i]);
+                    if (opcion.includes(eqA_EN.toLowerCase()) || opcion.includes(eqA.toLowerCase().substring(0,3))) {
+                        mktLocal = parseFloat(precios[i]);
+                    } else if (opcion.includes(eqB_EN.toLowerCase()) || opcion.includes(eqB.toLowerCase().substring(0,3))) {
+                        mktVisit = parseFloat(precios[i]);
+                    } else if (opcion.includes("draw") || opcion.includes("tie") || opcion.includes("empate")) {
+                        mktEmpate = parseFloat(precios[i]);
+                    }
                 }
                 
-                if (mktLocal !== undefined && mktVisit !== undefined && mktEmpate !== undefined) {
-                    mercadoRealEncontrado = true;
+                // Cierre de seguridad indexado por si fallaron los strings
+                if (mktLocal === undefined || mktVisit === undefined || mktEmpate === undefined) {
+                    mktLocal = parseFloat(precios[0]);
+                    mktEmpate = parseFloat(precios[1]);
+                    mktVisit = parseFloat(precios[2]);
                 }
-            }
-
-            if (!mercadoRealEncontrado && dataPoly) {
-                let precios = dataPoly.markets[0].outcomePrices;
-                if (typeof precios === 'string') precios = JSON.parse(precios);
-                mktLocal = parseFloat(precios[0]);
-                mktEmpate = parseFloat(precios[1]);
-                mktVisit = parseFloat(precios[2]);
                 mercadoRealEncontrado = true;
+            } else {
+                throw new Error("No listado en endpoints primarios.");
             }
-            
-            if (!mercadoRealEncontrado) throw new Error("Mercado ilíquido");
             
         } catch (error) {
-            console.warn("Usando Fallback Matemático:", error.message);
+            console.warn("Usando Fallback Estadístico:", error.message);
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
             let expVisit = 1 - expLocal;
