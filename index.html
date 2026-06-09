@@ -60,7 +60,7 @@
                 <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
                 <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
                 <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
-                <option value="Senegal">Senegal</option><option value="Sudáfrica" selected>Sudáfrica</option>
+                <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
                 <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
                 <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
                 <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
@@ -200,15 +200,14 @@
         let mercadoRealEncontrado = false;
         
         try {
-            // Hacemos el pedido filtrando por el Equipo A para acotar los eventos activos
+            // Buscamos eventos que coincidan con el Equipo A
             const urlPoly = `https://gamma-api.polymarket.com/events?search=${encodeURIComponent(eqA_EN)}&active=true&closed=false&limit=100`;
             const respuesta = await fetch(urlPoly);
-            if (!respuesta.ok) throw new Error("Error conectando directo a Polymarket");
+            if (!respuesta.ok) throw new Error("Error conectando a la API");
             const eventos = await respuesta.json();
             
             let mercadoObjetivo = null;
 
-            // BÚSQUEDA INVERSA: Analizamos las opciones de apuesta reales sin importar el título del enlace
             for (let evento of eventos) {
                 if (!evento.markets) continue;
 
@@ -219,7 +218,7 @@
                     if (Array.isArray(opciones) && opciones.length >= 2) {
                         let opcionesLower = opciones.map(o => o.toLowerCase());
                         
-                        // Validamos si la mesa de apuestas contiene tokens para ambos rivales (o sus raíces de 3 letras)
+                        // Verificamos si los dos equipos están como opciones de apuesta
                         let tieneA = opcionesLower.some(o => o.includes(eqA_EN.toLowerCase()) || o.includes(eqA.toLowerCase().substring(0,3)));
                         let tieneB = opcionesLower.some(o => o.includes(eqB_EN.toLowerCase()) || o.includes(eqB.toLowerCase().substring(0,3)));
 
@@ -232,7 +231,7 @@
                 if (mercadoObjetivo) break;
             }
 
-            // Si la búsqueda por Equipo A falló, hacemos un barrido secundario usando el Equipo B
+            // Si falla, barremos usando el Equipo B
             if (!mercadoObjetivo) {
                 const urlPolyB = `https://gamma-api.polymarket.com/events?search=${encodeURIComponent(eqB_EN)}&active=true&closed=false&limit=100`;
                 const respuestaB = await fetch(urlPolyB);
@@ -266,7 +265,6 @@
                 
                 let opcionesLower = opciones.map(o => o.toLowerCase());
 
-                // Mapeo perfecto vinculando strings con los índices del array de precios
                 for (let i = 0; i < opcionesLower.length; i++) {
                     let opcion = opcionesLower[i];
                     if (opcion.includes(eqA_EN.toLowerCase()) || opcion.includes(eqA.toLowerCase().substring(0,3))) {
@@ -278,7 +276,6 @@
                     }
                 }
                 
-                // Respaldo estructural indexado por si los nombres difieren radicalmente
                 if ((mktLocal === undefined || mktVisit === undefined || mktEmpate === undefined) && precios.length >= 3) {
                     mktLocal = parseFloat(precios[0]);
                     mktEmpate = parseFloat(precios[1]);
@@ -286,12 +283,12 @@
                 }
                 
                 if (mktLocal !== undefined && mktVisit !== undefined) {
-                    if (mktEmpate === undefined) mktEmpate = 0.0; // Evita errores si es mercado sin empate
+                    if (mktEmpate === undefined) mktEmpate = 0.0; 
                     mercadoRealEncontrado = true;
                 }
             }
 
-            if (!mercadoRealEncontrado) throw new Error("Partido no disponible en la API de Polymarket actualmente");
+            if (!mercadoRealEncontrado) throw new Error("Partido ausente en API");
             
         } catch (error) {
             console.warn("Usando Fallback Logístico:", error.message);
@@ -333,7 +330,7 @@
         if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
 
         btn.disabled = true;
-        btn.innerText = "Escaneando estructuras de la API...";
+        btn.innerText = "Escaneando API en vivo...";
         resultadosDiv.style.display = 'none';
         
         const datos = await extraerDatos(eqA, eqB);
@@ -343,70 +340,10 @@
         document.getElementById('debugPoly').innerHTML = `<b>${etiquetaMercado}</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
         document.getElementById('debugPanel').style.display = 'block';
 
-        // Curva logística e indexación de goles dinámicos por rendimiento
         const diferenciaAbsoluta = Math.abs(datos.eloA - datos.eloB);
         let golesTotales = 2.3 + (diferenciaAbsoluta / 400) + Math.max(0, ((datos.eloA + datos.eloB) - 3500) / 2000);
 
         if (golesTotales < 1.5) golesTotales = 1.5;
         if (golesTotales > 4.5) golesTotales = 4.5;
 
-        let expectativaA = 1 / (1 + Math.pow(10, -(datos.eloA - datos.eloB) / 400));
-        let expectativaB = 1 - expectativaA;
-
-        let xgA = golesTotales * expectativaA;
-        let xgB = golesTotales * expectativaB;
-        
-        if (xgA < 0.1) xgA = 0.1;
-        if (xgB < 0.1) xgB = 0.1;
-
-        let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
-        let maxProbExacta = 0;
-        let resExactoA = 0, resExactoB = 0;
-
-        for (let i = 0; i <= 6; i++) {
-            for (let j = 0; j <= 6; j++) {
-                let probEscenario = poisson(i, xgA) * poisson(j, xgB);
-
-                if (i > j) probLocalELO += probEscenario;
-                else if (i === j) probEmpateELO += probEscenario;
-                else probVisitanteELO += probEscenario;
-
-                if (probEscenario > maxProbExacta) {
-                    maxProbExacta = probEscenario;
-                    resExactoA = i;
-                    resExactoB = j;
-                }
-            }
-        }
-
-        const alpha = 0.70; 
-        let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
-        let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
-        let pB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
-
-        let suma = pA + pE + pB;
-        pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
-
-        document.getElementById('lblA').innerText = eqA;
-        document.getElementById('lblB').innerText = eqB;
-        
-        document.getElementById('resA').innerText = pA.toFixed(1) + "%";
-        document.getElementById('resEmpate').innerText = pE.toFixed(1) + "%";
-        document.getElementById('resB').innerText = pB.toFixed(1) + "%";
-
-        document.getElementById('cardA').classList.remove('winner');
-        document.getElementById('cardB').classList.remove('winner');
-
-        if (pA > pB) document.getElementById('cardA').classList.add('winner');
-        if (pB > pA) document.getElementById('cardB').classList.add('winner');
-
-        document.getElementById('resultadoExacto').innerHTML = `Marcador más probable (Poisson): <br><b>${eqA} ${resExactoA} - ${resExactoB} ${eqB}</b>`;
-
-        btn.innerText = "Calcular Predicción Maestra";
-        btn.disabled = false;
-        resultadosDiv.style.display = 'block';
-    }
-</script>
-
-</body>
-</html>
+        let expectativaA = 1 / (1 + Math.pow(10, -(datos.eloA - datos.
