@@ -41,7 +41,7 @@
             <label for="equipoA">Equipo Local (A)</label>
             <select id="equipoA">
                 <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
-                <option value="Argelia">Argelia</option><option value="Argentina" selected>Argentina</option>
+                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
                 <option value="Australia">Australia</option><option value="Austria">Austria</option>
                 <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
                 <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
@@ -55,7 +55,7 @@
                 <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
                 <option value="Irak">Irak</option><option value="Irán">Irán</option>
                 <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
-                <option value="Marruecos">Marruecos</option><option value="México">México</option>
+                <option value="Marruecos">Marruecos</option><option value="México" selected>México</option>
                 <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
                 <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
                 <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
@@ -70,7 +70,7 @@
             <label for="equipoB">Equipo Visitante (B)</label>
             <select id="equipoB">
                 <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
-                <option value="Argelia" selected>Argelia</option><option value="Argentina">Argentina</option>
+                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
                 <option value="Australia">Australia</option><option value="Austria">Austria</option>
                 <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
                 <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
@@ -89,7 +89,7 @@
                 <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
                 <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
                 <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
-                <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
+                <option value="Senegal">Senegal</option><option value="Sudáfrica" selected>Sudáfrica</option>
                 <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
                 <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
                 <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
@@ -130,6 +130,7 @@
 </div>
 
 <script>
+    // --- DICCIONARIO MAESTRO --- //
     const traducirMundial = {
         "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Argelia": "Algeria",
         "Australia": "Australia", "Austria": "Austria", "Bélgica": "Belgium",
@@ -148,191 +149,9 @@
         "Turquía": "Turkey", "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
     };
 
+    // --- 1. EXTRACCIÓN AUTOMATIZADA DE DATOS --- //
     async function rasparELO(equipo) {
         let eq_EN = traducirMundial[equipo] || equipo;
 
         try {
-            const urlWiki = `https://en.wikipedia.org/w/api.php?action=parse&page=World_Football_Elo_Ratings&prop=text&format=json&origin=*`;
-            const respuesta = await fetch(urlWiki);
-            const data = await respuesta.json();
-            
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data.parse.text['*'], 'text/html');
-            const celdas = Array.from(doc.querySelectorAll('td'));
-            
-            for (let i = 0; i < celdas.length; i++) {
-                if (celdas[i].textContent.trim() === eq_EN || celdas[i].textContent.includes(eq_EN)) {
-                    let puntaje1 = celdas[i+1]?.textContent.replace(/\D/g, '');
-                    let puntaje2 = celdas[i+2]?.textContent.replace(/\D/g, '');
-                    
-                    if (puntaje1 && puntaje1.length === 4) return parseInt(puntaje1);
-                    if (puntaje2 && puntaje2.length === 4) return parseInt(puntaje2);
-                }
-            }
-            throw new Error("No encontrado");
-        } catch (error) {
-            console.warn(`Fallback activado para ${equipo}`);
-            const baseSegura = {
-                "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
-                "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
-                "Canadá": 1750, "Chequia": 1800, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, 
-                "Croacia": 1990, "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
-                "Estados Unidos": 1900, "Francia": 2105, "Ghana": 1680, "Haití": 1610, "Inglaterra": 2040,
-                "Irak": 1660, "Irán": 1870, "Japón": 1930, "Jordania": 1640, "Marruecos": 1910,
-                "México": 1890, "Noruega": 1830, "Nueva Zelanda": 1650, "Países Bajos": 2020, "Panamá": 1690,
-                "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "Senegal": 1920, 
-                "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770, "Turquía": 1810, 
-                "Uruguay": 2000, "Uzbekistán": 1700
-            };
-            return baseSegura[equipo] || 1750;
-        }
-    }
-
-    async function extraerDatos(eqA, eqB) {
-        const eloA = await rasparELO(eqA);
-        const eloB = await rasparELO(eqB);
-
-        let eqA_EN = traducirMundial[eqA] || eqA;
-        let eqB_EN = traducirMundial[eqB] || eqB;
-
-        let mktLocal, mktEmpate, mktVisit;
-        
-        try {
-            const urlReal = `https://gamma-api.polymarket.com/events?search=${encodeURIComponent(eqA_EN)}`;
-            const urlProxy = `https://api.allorigins.win/get?url=${encodeURIComponent(urlReal)}`;
-            
-            const respuesta = await fetch(urlProxy);
-            const dataWrap = await respuesta.json();
-            const data = JSON.parse(dataWrap.contents); 
-            
-            const mercado = data.find(evento => evento.title.includes(eqB_EN));
-            
-            if (mercado && mercado.markets && mercado.markets.length > 0) {
-                let tokens = mercado.markets[0].outcomePrices;
-                if (typeof tokens === 'string') tokens = JSON.parse(tokens);
-                mktLocal = parseFloat(tokens[0]); mktEmpate = parseFloat(tokens[1]); mktVisit = parseFloat(tokens[2]);
-            } else {
-                throw new Error("Mercado cerrado");
-            }
-        } catch (error) {
-            let diferenciaELO = eloA - eloB;
-            let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
-            let expVisit = 1 - expLocal;
-            
-            let probEmpateBase = 0.28 - (Math.abs(diferenciaELO) * 0.00015);
-            if (probEmpateBase < 0.12) probEmpateBase = 0.12; 
-            
-            mktLocal = expLocal * (1 - probEmpateBase);
-            mktVisit = expVisit * (1 - probEmpateBase);
-            mktEmpate = probEmpateBase;
-
-            let varianza = (Math.random() * 0.04) - 0.02;
-            mktLocal += varianza; mktVisit -= varianza;
-        }
-
-        return { eloA, eloB, mktLocal, mktEmpate, mktVisit };
-    }
-
-    function factorial(n) {
-        if (n === 0 || n === 1) return 1;
-        for (var i = n - 1; i >= 1; i--) { n *= i; }
-        return n;
-    }
-
-    function poisson(k, lambda) {
-        return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
-    }
-
-    async function ejecutarPrediccion() {
-        const eqA = document.getElementById('equipoA').value;
-        const eqB = document.getElementById('equipoB').value;
-        const btn = document.getElementById('btnPredecir');
-        const resultadosDiv = document.getElementById('resultados');
-
-        if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
-
-        btn.disabled = true;
-        btn.innerText = "Calculando curvas logísticas...";
-        resultadosDiv.style.display = 'none';
-        
-        const datos = await extraerDatos(eqA, eqB);
-
-        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
-        document.getElementById('debugPoly').innerHTML = `<b>Mercado Implícito:</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
-        document.getElementById('debugPanel').style.display = 'block';
-
-        // --- MOTOR MATEMÁTICO CORREGIDO: CURVA LOGÍSTICA ---
-        
-        // 1. Goles Totales del Partido (Base 2.3 + Bonus por disparidad y poder ofensivo)
-        const diferenciaAbsoluta = Math.abs(datos.eloA - datos.eloB);
-        let golesTotales = 2.3 + (diferenciaAbsoluta / 400) + Math.max(0, ((datos.eloA + datos.eloB) - 3500) / 2000);
-
-        if (golesTotales < 1.5) golesTotales = 1.5;
-        if (golesTotales > 4.5) golesTotales = 4.5;
-
-        // 2. Expectativa Real de Victoria (Logística ELO Base 10)
-        let expectativaA = 1 / (1 + Math.pow(10, -(datos.eloA - datos.eloB) / 400));
-        let expectativaB = 1 - expectativaA;
-
-        // 3. Distribución de Goles Esperados (xG) multiplicando la expectativa por el total
-        let xgA = golesTotales * expectativaA;
-        let xgB = golesTotales * expectativaB;
-        
-        if (xgA < 0.1) xgA = 0.1;
-        if (xgB < 0.1) xgB = 0.1;
-
-        // Matriz de Poisson (0 a 6 goles)
-        let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0;
-        let maxProbExacta = 0;
-        let resExactoA = 0, resExactoB = 0;
-
-        for (let i = 0; i <= 6; i++) {
-            for (let j = 0; j <= 6; j++) {
-                let probEscenario = poisson(i, xgA) * poisson(j, xgB);
-
-                if (i > j) probLocalELO += probEscenario;
-                else if (i === j) probEmpateELO += probEscenario;
-                else probVisitanteELO += probEscenario;
-
-                // Capturamos el resultado exacto más alto
-                if (probEscenario > maxProbExacta) {
-                    maxProbExacta = probEscenario;
-                    resExactoA = i;
-                    resExactoB = j;
-                }
-            }
-        }
-
-        // Ponderación (Blend) - 70% Mercado / 30% ELO
-        const alpha = 0.70; 
-        let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
-        let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
-        let pB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
-
-        let suma = pA + pE + pB;
-        pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
-
-        // Interfaz Gráfica
-        document.getElementById('lblA').innerText = eqA;
-        document.getElementById('lblB').innerText = eqB;
-        
-        document.getElementById('resA').innerText = pA.toFixed(1) + "%";
-        document.getElementById('resEmpate').innerText = pE.toFixed(1) + "%";
-        document.getElementById('resB').innerText = pB.toFixed(1) + "%";
-
-        document.getElementById('cardA').classList.remove('winner');
-        document.getElementById('cardB').classList.remove('winner');
-
-        if (pA > pB) document.getElementById('cardA').classList.add('winner');
-        if (pB > pA) document.getElementById('cardB').classList.add('winner');
-
-        document.getElementById('resultadoExacto').innerHTML = `Marcador más probable (Poisson): <br><b>${eqA} ${resExactoA} - ${resExactoB} ${eqB}</b>`;
-
-        btn.innerText = "Calcular Predicción Maestra";
-        btn.disabled = false;
-        resultadosDiv.style.display = 'block';
-    }
-</script>
-
-</body>
-</html>
+            const urlWiki = `https://en.wikipedia.
