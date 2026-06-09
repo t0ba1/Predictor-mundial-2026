@@ -8,11 +8,11 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #1877f2; margin-bottom: 5px; }
-        p.subtitle { text-align: center; color: #65676b; margin-bottom: 30px; }
+        p.subtitle { text-align: center; color: #65676b; margin-bottom: 20px; }
         .selectors { display: flex; gap: 20px; margin-bottom: 20px; }
         .selector-group { flex: 1; }
         label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 14px; }
-        select { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccd0d5; background-color: #f5f6f7; box-sizing: border-box; }
+        select, input[type="text"] { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccd0d5; background-color: #f5f6f7; box-sizing: border-box; }
         button { width: 100%; padding: 15px; font-size: 18px; border-radius: 8px; border: none; background-color: #1877f2; color: white; font-weight: bold; cursor: pointer; transition: background-color 0.3s; margin-top: 10px; }
         button:hover { background-color: #166fe5; }
         button:disabled { background-color: #9cb4d8; cursor: not-allowed; }
@@ -34,7 +34,7 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: ELO + Búsqueda Estructural API + Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: ELO + Extracción Estructural Directa + Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
@@ -97,6 +97,13 @@
         </div>
     </div>
 
+    <div class="selectors" style="margin-bottom: 20px;">
+        <div class="selector-group">
+            <label for="polyUrl">Enlace del Partido en Polymarket (Ej: https://polymarket.com/es/sports/world-cup/...)</label>
+            <input type="text" id="polyUrl" placeholder="Pegá el link acá para forzar la lectura del mercado">
+        </div>
+    </div>
+
     <button id="btnPredecir" onclick="ejecutarPrediccion()">Calcular Predicción Maestra</button>
 
     <div class="debug-panel" id="debugPanel">
@@ -148,150 +155,89 @@
         "Turquía": "Turkey", "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
     };
 
-    // --- 1. EXTRACCIÓN ELO --- //
     async function rasparELO(equipo) {
-        let eq_EN = equipo === "Estados Unidos" ? "United States" : (traducirMundial[equipo] || equipo);
-        try {
-            const urlWiki = `https://en.wikipedia.org/w/api.php?action=parse&page=World_Football_Elo_Ratings&prop=text&format=json&origin=*`;
-            const respuesta = await fetch(urlWiki);
-            const data = await respuesta.json();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(data.parse.text['*'], 'text/html');
-            const celdas = Array.from(doc.querySelectorAll('td'));
-            for (let i = 0; i < celdas.length; i++) {
-                if (celdas[i].textContent.trim() === eq_EN || celdas[i].textContent.includes(eq_EN)) {
-                    let puntaje1 = celdas[i+1]?.textContent.replace(/\D/g, '');
-                    let puntaje2 = celdas[i+2]?.textContent.replace(/\D/g, '');
-                    if (puntaje1 && puntaje1.length === 4) return parseInt(puntaje1);
-                    if (puntaje2 && puntaje2.length === 4) return parseInt(puntaje2);
-                }
-            }
-            throw new Error("No encontrado");
-        } catch (error) {
-            console.warn(`Fallback ELO para ${equipo}`);
-            const baseSegura = {
-                "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
-                "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
-                "Canadá": 1750, "Chequia": 1800, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, 
-                "Croacia": 1990, "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
-                "Estados Unidos": 1900, "Francia": 2105, "Ghana": 1680, "Haití": 1610, "Inglaterra": 2040,
-                "Irak": 1660, "Irán": 1870, "Japón": 1930, "Jordania": 1640, "Marruecos": 1910,
-                "México": 1890, "Noruega": 1830, "Nueva Zelanda": 1650, "Países Bajos": 2020, "Panamá": 1690,
-                "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "Senegal": 1920, 
-                "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770, "Turquía": 1810, 
-                "Uruguay": 2000, "Uzbekistán": 1700
-            };
-            return baseSegura[equipo] || 1750;
-        }
+        // Fallback directo sin ensuciar la consola con errores de parseo
+        const baseSegura = {
+            "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
+            "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
+            "Canadá": 1750, "Chequia": 1800, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, 
+            "Croacia": 1990, "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
+            "Estados Unidos": 1900, "Francia": 2105, "Ghana": 1680, "Haití": 1610, "Inglaterra": 2040,
+            "Irak": 1660, "Irán": 1870, "Japón": 1930, "Jordania": 1640, "Marruecos": 1910,
+            "México": 1868, "Noruega": 1830, "Nueva Zelanda": 1650, "Países Bajos": 2020, "Panamá": 1690,
+            "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "Senegal": 1920, 
+            "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770, "Turquía": 1810, 
+            "Uruguay": 2000, "Uzbekistán": 1700
+        };
+        return baseSegura[equipo] || 1750;
     }
 
-    // --- 2. BÚSQUEDA ESTRUCTURAL EN LA API DE POLYMARKET --- //
     async function extraerDatos(eqA, eqB) {
         const eloA = await rasparELO(eqA);
         const eloB = await rasparELO(eqB);
 
         let eqA_EN = traducirMundial[eqA] || eqA;
         let eqB_EN = traducirMundial[eqB] || eqB;
-
         if (eqA === "Estados Unidos") eqA_EN = "USA";
         if (eqB === "Estados Unidos") eqB_EN = "USA";
 
-        let mktLocal, mktEmpate, mktVisit;
+        let mktLocal = undefined, mktEmpate = undefined, mktVisit = undefined;
         let mercadoRealEncontrado = false;
         
+        let urlIngresada = document.getElementById('polyUrl').value.trim();
+        let slugFuerza = null;
+        if (urlIngresada && urlIngresada.includes('polymarket.com/')) {
+            let urlLimpia = urlIngresada.split('?')[0].replace(/\/$/, '');
+            let partesRuta = urlLimpia.split('/');
+            slugFuerza = partesRuta[partesRuta.length - 1];
+        }
+
         try {
-            // Buscamos eventos que coincidan con el Equipo A
-            const urlPoly = `https://gamma-api.polymarket.com/events?search=${encodeURIComponent(eqA_EN)}&active=true&closed=false&limit=100`;
-            const respuesta = await fetch(urlPoly);
-            if (!respuesta.ok) throw new Error("Error conectando a la API");
-            const eventos = await respuesta.json();
-            
-            let mercadoObjetivo = null;
+            let eventoElegido = null;
 
-            for (let evento of eventos) {
-                if (!evento.markets) continue;
-
-                for (let mercado of evento.markets) {
-                    let opciones = mercado.outcomes;
-                    if (typeof opciones === 'string') opciones = JSON.parse(opciones);
-
-                    if (Array.isArray(opciones) && opciones.length >= 2) {
-                        let opcionesLower = opciones.map(o => o.toLowerCase());
-                        
-                        // Verificamos si los dos equipos están como opciones de apuesta
-                        let tieneA = opcionesLower.some(o => o.includes(eqA_EN.toLowerCase()) || o.includes(eqA.toLowerCase().substring(0,3)));
-                        let tieneB = opcionesLower.some(o => o.includes(eqB_EN.toLowerCase()) || o.includes(eqB.toLowerCase().substring(0,3)));
-
-                        if (tieneA && tieneB) {
-                            mercadoObjetivo = mercado;
-                            break;
-                        }
-                    }
-                }
-                if (mercadoObjetivo) break;
+            if (slugFuerza) {
+                let res = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugFuerza}`);
+                let data = await res.json();
+                if (data && data.length > 0) eventoElegido = data[0];
+            } else {
+                const slugNormal = `${eqA_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqB_EN.toLowerCase().replace(/ /g, '-')}`;
+                let res = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugNormal}`);
+                let data = await res.json();
+                if (data && data.length > 0) eventoElegido = data[0];
             }
 
-            // Si falla, barremos usando el Equipo B
-            if (!mercadoObjetivo) {
-                const urlPolyB = `https://gamma-api.polymarket.com/events?search=${encodeURIComponent(eqB_EN)}&active=true&closed=false&limit=100`;
-                const respuestaB = await fetch(urlPolyB);
-                const eventosB = await respuestaB.json();
-                
-                for (let evento of eventosB) {
-                    if (!evento.markets) continue;
-                    for (let mercado of evento.markets) {
-                        let opciones = mercado.outcomes;
-                        if (typeof opciones === 'string') opciones = JSON.parse(opciones);
-                        if (Array.isArray(opciones) && opciones.length >= 2) {
-                            let opcionesLower = opciones.map(o => o.toLowerCase());
-                            let tieneA = opcionesLower.some(o => o.includes(eqA_EN.toLowerCase()) || o.includes(eqA.toLowerCase().substring(0,3)));
-                            let tieneB = opcionesLower.some(o => o.includes(eqB_EN.toLowerCase()) || o.includes(eqB.toLowerCase().substring(0,3)));
-                            if (tieneA && tieneB) {
-                                mercadoObjetivo = mercado;
-                                break;
-                            }
-                        }
-                    }
-                    if (mercadoObjetivo) break;
-                }
-            }
+            if (eventoElegido && eventoElegido.markets) {
+                // LA CORRECCIÓN CLAVE: Polymarket divide los equipos en mercados de "Sí/No" separados.
+                for (let mercado of eventoElegido.markets) {
+                    let opciones = typeof mercado.outcomes === 'string' ? JSON.parse(mercado.outcomes) : mercado.outcomes;
+                    let precios = typeof mercado.outcomePrices === 'string' ? JSON.parse(mercado.outcomePrices) : mercado.outcomePrices;
+                    
+                    let idxYes = opciones.findIndex(o => o.toLowerCase() === 'yes');
+                    if (idxYes === -1) idxYes = 0; // Si no hay Yes, toma el primero por seguridad
 
-            if (mercadoObjetivo) {
-                let precios = mercadoObjetivo.outcomePrices;
-                let opciones = mercadoObjetivo.outcomes;
-                
-                if (typeof precios === 'string') precios = JSON.parse(precios);
-                if (typeof opciones === 'string') opciones = JSON.parse(opciones);
-                
-                let opcionesLower = opciones.map(o => o.toLowerCase());
+                    let precio = parseFloat(precios[idxYes]);
+                    let tituloMercado = (mercado.question || mercado.groupItemTitle || mercado.description || "").toLowerCase();
 
-                for (let i = 0; i < opcionesLower.length; i++) {
-                    let opcion = opcionesLower[i];
-                    if (opcion.includes(eqA_EN.toLowerCase()) || opcion.includes(eqA.toLowerCase().substring(0,3))) {
-                        mktLocal = parseFloat(precios[i]);
-                    } else if (opcion.includes(eqB_EN.toLowerCase()) || opcion.includes(eqB.toLowerCase().substring(0,3))) {
-                        mktVisit = parseFloat(precios[i]);
-                    } else if (opcion.includes("draw") || opcion.includes("tie") || opcion.includes("empate")) {
-                        mktEmpate = parseFloat(precios[i]);
+                    // Asignamos el precio del "Sí" al equipo correspondiente
+                    if (tituloMercado.includes(eqA_EN.toLowerCase()) || tituloMercado.includes(eqA.toLowerCase().substring(0,3))) {
+                        mktLocal = precio;
+                    } else if (tituloMercado.includes(eqB_EN.toLowerCase()) || tituloMercado.includes(eqB.toLowerCase().substring(0,3))) {
+                        mktVisit = precio;
+                    } else if (tituloMercado.includes("draw") || tituloMercado.includes("tie") || tituloMercado.includes("empate")) {
+                        mktEmpate = precio;
                     }
                 }
-                
-                if ((mktLocal === undefined || mktVisit === undefined || mktEmpate === undefined) && precios.length >= 3) {
-                    mktLocal = parseFloat(precios[0]);
-                    mktEmpate = parseFloat(precios[1]);
-                    mktVisit = parseFloat(precios[2]);
-                }
-                
+
                 if (mktLocal !== undefined && mktVisit !== undefined) {
-                    if (mktEmpate === undefined) mktEmpate = 0.0; 
+                    if (mktEmpate === undefined) mktEmpate = 0.0;
                     mercadoRealEncontrado = true;
                 }
             }
 
-            if (!mercadoRealEncontrado) throw new Error("Partido ausente en API");
+            if (!mercadoRealEncontrado) throw new Error("Mercados de Sí/No ilíquidos o ausentes.");
             
         } catch (error) {
-            console.warn("Usando Fallback Logístico:", error.message);
+            console.error("Polymarket Fallback:", error.message);
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
             let expVisit = 1 - expLocal;
@@ -310,7 +256,6 @@
         return { eloA, eloB, mktLocal, mktEmpate, mktVisit, mercadoRealEncontrado };
     }
 
-    // --- 3. PROCESAMIENTO ESTADÍSTICO --- //
     function factorial(n) {
         if (n === 0 || n === 1) return 1;
         for (var i = n - 1; i >= 1; i--) { n *= i; }
@@ -330,12 +275,12 @@
         if (eqA === eqB) { alert("Seleccioná equipos distintos."); return; }
 
         btn.disabled = true;
-        btn.innerText = "Escaneando API en vivo...";
+        btn.innerText = "Extrayendo mercados binarios (Sí/No)...";
         resultadosDiv.style.display = 'none';
         
         const datos = await extraerDatos(eqA, eqB);
 
-        let etiquetaMercado = datos.mercadoRealEncontrado ? "<span style='color:green;'>Mercado Real (API en Vivo)</span>" : "<span style='color:red;'>Simulación (Fórmula ELO)</span>";
+        let etiquetaMercado = datos.mercadoRealEncontrado ? "<span style='color:green;'>Mercado Real (Polymarket API)</span>" : "<span style='color:red;'>Simulación Matemática</span>";
         document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
         document.getElementById('debugPoly').innerHTML = `<b>${etiquetaMercado}</b><br>${eqA}: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>${eqB}: ${(datos.mktVisit*100).toFixed(1)}%`;
         document.getElementById('debugPanel').style.display = 'block';
