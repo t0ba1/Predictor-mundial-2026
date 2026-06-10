@@ -34,7 +34,7 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: ELO + Serverless API + Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: ELO Dinámico + Serverless API + Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
@@ -132,36 +132,50 @@
 <script>
     const traducirMundial = {
         "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Argelia": "Algeria",
-        "Australia": "Australia", "Austria": "Austria", "Bélgica": "Belgium",
-        "Bosnia y Herzegovina": "Bosnia and Herzegovina", "Brasil": "Brazil",
-        "Cabo Verde": "Cape Verde", "Canadá": "Canada", "Chequia": "Czech Republic",
-        "Colombia": "Colombia", "Corea del Sur": "South Korea", "Costa de Marfil": "Ivory Coast",
-        "Croacia": "Croatia", "Curazao": "Curaçao", "Ecuador": "Ecuador", "Egipto": "Egypt",
-        "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "USA",
+        "Argentina": "Argentina", "Australia": "Australia", "Austria": "Austria", "Bélgica": "Belgium",
+        "Bosnia y Herzegovina": "Bosnia and Herzegovina", "Brasil": "Brazil", "Cabo Verde": "Cape Verde",
+        "Canadá": "Canada", "Chequia": "Czech Republic", "Colombia": "Colombia", "Corea del Sur": "South Korea",
+        "Costa de Marfil": "Ivory Coast", "Croacia": "Croatia", "Curazao": "Curaçao", "Ecuador": "Ecuador",
+        "Egipto": "Egypt", "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "USA",
         "Francia": "France", "Ghana": "Ghana", "Haití": "Haiti", "Inglaterra": "England",
         "Irak": "Iraq", "Irán": "Iran", "Japón": "Japan", "Jordania": "Jordan",
-        "Marruecos": "Morocco", "México": "Mexico", "Noruega": "Norway",
-        "Nueva Zelanda": "New Zealand", "Países Bajos": "Netherlands", "Panamá": "Panama",
-        "Paraguay": "Paraguay", "Portugal": "Portugal", "Qatar": "Qatar",
-        "RD Congo": "DR Congo", "Senegal": "Senegal", "Sudáfrica": "South Africa",
-        "Suecia": "Sweden", "Suiza": "Switzerland", "Túnez": "Tunisia", 
-        "Turquía": "Turkey", "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
+        "Marruecos": "Morocco", "México": "Mexico", "Noruega": "Norway", "Nueva Zelanda": "New Zealand",
+        "Países Bajos": "Netherlands", "Panamá": "Panama", "Paraguay": "Paraguay", "Portugal": "Portugal",
+        "Qatar": "Qatar", "RD Congo": "DR Congo", "Senegal": "Senegal", "Sudáfrica": "South Africa",
+        "Suecia": "Sweden", "Suiza": "Switzerland", "Túnez": "Tunisia", "Turquía": "Turkey",
+        "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
     };
 
+    let cacheELO = null;
+
     async function rasparELO(equipo) {
-        const baseSegura = {
-            "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
-            "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
-            "Canadá": 1750, "Chequia": 1800, "Colombia": 2005, "Corea del Sur": 1880, "Costa de Marfil": 1760, 
-            "Croacia": 1990, "Curazao": 1600, "Ecuador": 1950, "Egipto": 1790, "Escocia": 1780, "España": 2030,
-            "Estados Unidos": 1900, "Francia": 2105, "Ghana": 1680, "Haití": 1610, "Inglaterra": 2040,
-            "Irak": 1660, "Irán": 1870, "Japón": 1930, "Jordania": 1640, "Marruecos": 1910,
-            "México": 1868, "Noruega": 1830, "Nueva Zelanda": 1650, "Países Bajos": 2020, "Panamá": 1690,
-            "Paraguay": 1710, "Portugal": 2015, "Qatar": 1630, "RD Congo": 1620, "Senegal": 1920, 
-            "Sudáfrica": 1720, "Suecia": 1840, "Suiza": 1940, "Túnez": 1770, "Turquía": 1810, 
-            "Uruguay": 2000, "Uzbekistán": 1700
-        };
-        return baseSegura[equipo] || 1750;
+        let eq_EN = traducirMundial[equipo] || equipo;
+        if (equipo === "Estados Unidos") eq_EN = "USA";
+
+        try {
+            if (!cacheELO) {
+                let res = await fetch('/api/elo');
+                if (!res.ok) throw new Error("Fallo en la API de ELO Serverless");
+                cacheELO = await res.json();
+            }
+
+            if (cacheELO[eq_EN]) {
+                return cacheELO[eq_EN];
+            } else {
+                console.warn(`No se encontró ELO en vivo para ${eq_EN}. Usando fallback histórico.`);
+                throw new Error("País no encontrado en eloratings");
+            }
+            
+        } catch (error) {
+            console.error(error.message);
+            // Fallback en caso de que la API falle
+            const baseSegura = {
+                "Germany": 1980, "Argentina": 2140, "Brazil": 2080, "Colombia": 2005, 
+                "Spain": 2030, "USA": 1900, "France": 2105, "England": 2040, 
+                "Mexico": 1868, "Uruguay": 2000
+            };
+            return baseSegura[eq_EN] || 1750;
+        }
     }
 
     async function extraerDatos(eqA, eqB) {
@@ -180,7 +194,7 @@
 
         try {
             let res = await fetch(`/api/poly?slug=${slugNormal}`);
-            if (!res.ok) throw new Error("Mercado inexistente o bloqueado");
+            if (!res.ok) throw new Error("Mercado inexistente o bloqueado en Polymarket");
             
             let data = await res.json();
             let eventoElegido = (data && data.length > 0) ? data[0] : null;
@@ -200,4 +214,98 @@
                         mktLocal = precio;
                     } else if (tituloMercado.includes(eqB_EN.toLowerCase()) || tituloMercado.includes(eqB.toLowerCase().substring(0,3))) {
                         mktVisit = precio;
-                    } else if (tituloMercado.includes("
+                    } else if (tituloMercado.includes("draw") || tituloMercado.includes("tie") || tituloMercado.includes("empate")) {
+                        mktEmpate = precio;
+                    }
+                }
+                if (mktLocal !== undefined && mktVisit !== undefined) {
+                    if (mktEmpate === undefined) mktEmpate = 0.0;
+                    mercadoRealEncontrado = true;
+                }
+            }
+            if (!mercadoRealEncontrado) throw new Error("Mercados de Sí/No ausentes.");
+            
+        } catch (error) {
+            console.warn("Mercado inactivo. Aplicando Fallback Matemático:", error.message);
+            let diferenciaELO = eloA - eloB;
+            let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
+            let expVisit = 1 - expLocal;
+            let probEmpateBase = Math.max(0.12, 0.28 - (Math.abs(diferenciaELO) * 0.00015));
+            mktLocal = expLocal * (1 - probEmpateBase);
+            mktVisit = expVisit * (1 - probEmpateBase);
+            mktEmpate = probEmpateBase;
+        }
+
+        return { eloA, eloB, mktLocal, mktEmpate, mktVisit, mercadoRealEncontrado };
+    }
+
+    function factorial(n) { return (n === 0 || n === 1) ? 1 : n * factorial(n - 1); }
+    function poisson(k, lambda) { return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k); }
+
+    async function ejecutarPrediccion() {
+        const eqA = document.getElementById('equipoA').value;
+        const eqB = document.getElementById('equipoB').value;
+        const btn = document.getElementById('btnPredecir');
+        const resultadosDiv = document.getElementById('resultados');
+
+        if (eqA === eqB) return alert("Seleccioná equipos distintos.");
+
+        btn.disabled = true;
+        btn.innerText = "Consultando APIs y calculando...";
+        resultadosDiv.style.display = 'none';
+        
+        const datos = await extraerDatos(eqA, eqB);
+
+        let etiquetaMercado = datos.mercadoRealEncontrado ? "<span style='color:green;'>API Serverless (Polymarket OK)</span>" : "<span style='color:red;'>Simulación Matemática (Sin Mercado)</span>";
+        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO (En Vivo):</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
+        document.getElementById('debugPoly').innerHTML = `<b>${etiquetaMercado}</b><br>Local: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>Visitante: ${(datos.mktVisit*100).toFixed(1)}%`;
+        document.getElementById('debugPanel').style.display = 'block';
+
+        const difAbs = Math.abs(datos.eloA - datos.eloB);
+        let golesTotales = Math.min(4.5, Math.max(1.5, 2.3 + (difAbs / 400) + Math.max(0, ((datos.eloA + datos.eloB) - 3500) / 2000)));
+
+        let expA = 1 / (1 + Math.pow(10, -(datos.eloA - datos.eloB) / 400));
+        let xgA = Math.max(0.1, golesTotales * expA);
+        let xgB = Math.max(0.1, golesTotales * (1 - expA));
+
+        let probLocalELO = 0, probEmpateELO = 0, probVisitanteELO = 0, maxProbExacta = 0, resExactoA = 0, resExactoB = 0;
+
+        for (let i = 0; i <= 6; i++) {
+            for (let j = 0; j <= 6; j++) {
+                let probEscenario = poisson(i, xgA) * poisson(j, xgB);
+                if (i > j) probLocalELO += probEscenario;
+                else if (i === j) probEmpateELO += probEscenario;
+                else probVisitanteELO += probEscenario;
+
+                if (probEscenario > maxProbExacta) { maxProbExacta = probEscenario; resExactoA = i; resExactoB = j; }
+            }
+        }
+
+        // Peso: 70% Mercado / 30% Matemática pura
+        const alpha = 0.70; 
+        let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
+        let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
+        let pB = (alpha * datos.mktVisit) + ((1 - alpha) * probVisitanteELO);
+
+        let suma = pA + pE + pB;
+        pA = (pA / suma) * 100; pE = (pE / suma) * 100; pB = (pB / suma) * 100;
+
+        document.getElementById('lblA').innerText = eqA;
+        document.getElementById('lblB').innerText = eqB;
+        document.getElementById('resA').innerText = pA.toFixed(1) + "%";
+        document.getElementById('resEmpate').innerText = pE.toFixed(1) + "%";
+        document.getElementById('resB').innerText = pB.toFixed(1) + "%";
+
+        document.getElementById('cardA').className = 'card' + (pA > pB ? ' winner' : '');
+        document.getElementById('cardB').className = 'card' + (pB > pA ? ' winner' : '');
+
+        document.getElementById('resultadoExacto').innerHTML = `Marcador más probable: <br><b>${eqA} ${resExactoA} - ${resExactoB} ${eqB}</b>`;
+
+        btn.innerText = "Calcular Predicción Maestra";
+        btn.disabled = false;
+        resultadosDiv.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
