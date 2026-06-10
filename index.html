@@ -34,7 +34,7 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: ELO Dinámico + Serverless API + Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: ELO Dinámico + Serverless API Búsqueda + Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
@@ -168,7 +168,6 @@
             
         } catch (error) {
             console.error(error.message);
-            // Fallback en caso de que la API falle
             const baseSegura = {
                 "Germany": 1980, "Argentina": 2140, "Brazil": 2080, "Colombia": 2005, 
                 "Spain": 2030, "USA": 1900, "France": 2105, "England": 2040, 
@@ -189,11 +188,12 @@
 
         let mktLocal = undefined, mktEmpate = undefined, mktVisit = undefined;
         let mercadoRealEncontrado = false;
-        
-        const slugNormal = `${eqA_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqB_EN.toLowerCase().replace(/ /g, '-')}`;
 
         try {
-            let res = await fetch(`/api/poly?slug=${slugNormal}`);
+            // Buscamos a través de la API mandando los nombres limpios
+            let urlBusqueda = `/api/poly?a=${encodeURIComponent(eqA_EN)}&b=${encodeURIComponent(eqB_EN)}`;
+            let res = await fetch(urlBusqueda);
+            
             if (!res.ok) throw new Error("Mercado inexistente o bloqueado en Polymarket");
             
             let data = await res.json();
