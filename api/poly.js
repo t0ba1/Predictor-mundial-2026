@@ -1,11 +1,13 @@
 export default async function handler(req, res) {
-    const { slug } = req.query;
+    const { a, b } = req.query;
 
-    if (!slug) {
-        return res.status(400).json({ error: "Falta el parámetro slug" });
+    if (!a || !b) {
+        return res.status(400).json({ error: "Faltan los equipos" });
     }
 
-    const url = `https://gamma-api.polymarket.com/events?slug=${slug}`;
+    // Usamos el endpoint de BÚSQUEDA de Polymarket en lugar de buscar por URL estricta
+    const searchQuery = `${a} ${b}`;
+    const url = `https://gamma-api.polymarket.com/events?query=${encodeURIComponent(searchQuery)}&active=true&closed=false`;
 
     try {
         const polyRes = await fetch(url, {
@@ -21,8 +23,18 @@ export default async function handler(req, res) {
 
         const data = await polyRes.json();
         
+        let eventoEncontrado = null;
+        if (data && data.length > 0) {
+            // Polymarket puede devolver varios resultados. Filtramos el evento principal que contenga ambos equipos.
+            eventoEncontrado = data.find(ev => 
+                ev.title.toLowerCase().includes(a.toLowerCase()) && 
+                ev.title.toLowerCase().includes(b.toLowerCase())
+            );
+            if (!eventoEncontrado) eventoEncontrado = data[0]; 
+        }
+
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.status(200).json(data);
+        res.status(200).json(eventoEncontrado ? [eventoEncontrado] : []);
         
     } catch (error) {
         res.status(500).json({ error: error.message });
