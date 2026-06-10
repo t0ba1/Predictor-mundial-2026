@@ -12,7 +12,7 @@
         .selectors { display: flex; gap: 20px; margin-bottom: 20px; }
         .selector-group { flex: 1; }
         label { font-weight: bold; display: block; margin-bottom: 8px; font-size: 14px; }
-        select, input[type="text"] { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccd0d5; background-color: #f5f6f7; box-sizing: border-box; }
+        select { width: 100%; padding: 12px; font-size: 16px; border-radius: 8px; border: 1px solid #ccd0d5; background-color: #f5f6f7; box-sizing: border-box; }
         button { width: 100%; padding: 15px; font-size: 18px; border-radius: 8px; border: none; background-color: #1877f2; color: white; font-weight: bold; cursor: pointer; transition: background-color 0.3s; margin-top: 10px; }
         button:hover { background-color: #166fe5; }
         button:disabled { background-color: #9cb4d8; cursor: not-allowed; }
@@ -179,12 +179,10 @@
         const slugNormal = `${eqA_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqB_EN.toLowerCase().replace(/ /g, '-')}`;
 
         try {
-            const urlPolymarket = `https://gamma-api.polymarket.com/events?slug=${slugNormal}`;
-            const urlProxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(urlPolymarket)}`;
+            // ACÁ ESTÁ EL CAMBIO CRÍTICO: Llamamos a tu servidor Python local
+            let res = await fetch(`/api/poly/${slugNormal}`);
             
-            let res = await fetch(urlProxy);
-            
-            if (!res.ok) throw new Error("Fallo en el proxy o mercado inexistente");
+            if (!res.ok) throw new Error("Mercado inexistente o bloqueado");
             
             let data = await res.json();
             let eventoElegido = (data && data.length > 0) ? data[0] : null;
@@ -218,7 +216,7 @@
             if (!mercadoRealEncontrado) throw new Error("Mercados de Sí/No ilíquidos o ausentes.");
             
         } catch (error) {
-            console.warn("Mercado no encontrado o error de API. Usando Fallback Matemático:", error.message);
+            console.warn("Usando Fallback Matemático:", error.message);
             
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
