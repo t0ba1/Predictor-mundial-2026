@@ -34,7 +34,7 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: ELO + Extracción Estructural Directa + Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: ELO + Extracción Automática Polymarket + Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
@@ -97,13 +97,6 @@
         </div>
     </div>
 
-    <div class="selectors" style="margin-bottom: 20px;">
-        <div class="selector-group">
-            <label for="polyUrl">Enlace del Partido en Polymarket (Ej: https://polymarket.com/es/sports/world-cup/...)</label>
-            <input type="text" id="polyUrl" placeholder="Pegá el link acá para forzar la lectura del mercado">
-        </div>
-    </div>
-
     <button id="btnPredecir" onclick="ejecutarPrediccion()">Calcular Predicción Maestra</button>
 
     <div class="debug-panel" id="debugPanel">
@@ -156,7 +149,6 @@
     };
 
     async function rasparELO(equipo) {
-        // Fallback directo sin ensuciar la consola con errores de parseo
         const baseSegura = {
             "Alemania": 1980, "Arabia Saudita": 1740, "Argelia": 1820, "Argentina": 2140, "Australia": 1850,
             "Austria": 1860, "Bélgica": 1970, "Bosnia y Herzegovina": 1670, "Brasil": 2080, "Cabo Verde": 1730,
@@ -184,41 +176,30 @@
         let mktLocal = undefined, mktEmpate = undefined, mktVisit = undefined;
         let mercadoRealEncontrado = false;
         
-        let urlIngresada = document.getElementById('polyUrl').value.trim();
-        let slugFuerza = null;
-        if (urlIngresada && urlIngresada.includes('polymarket.com/')) {
-            let urlLimpia = urlIngresada.split('?')[0].replace(/\/$/, '');
-            let partesRuta = urlLimpia.split('/');
-            slugFuerza = partesRuta[partesRuta.length - 1];
-        }
+        const slugNormal = `${eqA_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqB_EN.toLowerCase().replace(/ /g, '-')}`;
 
         try {
-            let eventoElegido = null;
-
-            if (slugFuerza) {
-                let res = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugFuerza}`);
-                let data = await res.json();
-                if (data && data.length > 0) eventoElegido = data[0];
-            } else {
-                const slugNormal = `${eqA_EN.toLowerCase().replace(/ /g, '-')}-vs-${eqB_EN.toLowerCase().replace(/ /g, '-')}`;
-                let res = await fetch(`https://gamma-api.polymarket.com/events?slug=${slugNormal}`);
-                let data = await res.json();
-                if (data && data.length > 0) eventoElegido = data[0];
-            }
+            const urlPolymarket = `https://gamma-api.polymarket.com/events?slug=${slugNormal}`;
+            const urlProxy = `https://api.allorigins.win/raw?url=${encodeURIComponent(urlPolymarket)}`;
+            
+            let res = await fetch(urlProxy);
+            
+            if (!res.ok) throw new Error("Fallo en el proxy o mercado inexistente");
+            
+            let data = await res.json();
+            let eventoElegido = (data && data.length > 0) ? data[0] : null;
 
             if (eventoElegido && eventoElegido.markets) {
-                // LA CORRECCIÓN CLAVE: Polymarket divide los equipos en mercados de "Sí/No" separados.
                 for (let mercado of eventoElegido.markets) {
                     let opciones = typeof mercado.outcomes === 'string' ? JSON.parse(mercado.outcomes) : mercado.outcomes;
                     let precios = typeof mercado.outcomePrices === 'string' ? JSON.parse(mercado.outcomePrices) : mercado.outcomePrices;
                     
                     let idxYes = opciones.findIndex(o => o.toLowerCase() === 'yes');
-                    if (idxYes === -1) idxYes = 0; // Si no hay Yes, toma el primero por seguridad
+                    if (idxYes === -1) idxYes = 0; 
 
                     let precio = parseFloat(precios[idxYes]);
                     let tituloMercado = (mercado.question || mercado.groupItemTitle || mercado.description || "").toLowerCase();
 
-                    // Asignamos el precio del "Sí" al equipo correspondiente
                     if (tituloMercado.includes(eqA_EN.toLowerCase()) || tituloMercado.includes(eqA.toLowerCase().substring(0,3))) {
                         mktLocal = precio;
                     } else if (tituloMercado.includes(eqB_EN.toLowerCase()) || tituloMercado.includes(eqB.toLowerCase().substring(0,3))) {
@@ -237,7 +218,8 @@
             if (!mercadoRealEncontrado) throw new Error("Mercados de Sí/No ilíquidos o ausentes.");
             
         } catch (error) {
-            console.error("Polymarket Fallback:", error.message);
+            console.warn("Mercado no encontrado o error de API. Usando Fallback Matemático:", error.message);
+            
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
             let expVisit = 1 - expLocal;
