@@ -159,7 +159,7 @@
                 cacheELO = await res.json();
             }
 
-            if (cacheELO[eq_EN]) {
+            if (cacheELO && cacheELO[eq_EN]) {
                 return cacheELO[eq_EN];
             } else {
                 console.warn(`No se encontró ELO en vivo para ${eq_EN}. Usando fallback histórico.`);
@@ -171,7 +171,7 @@
             const baseSegura = {
                 "Germany": 1980, "Argentina": 2140, "Brazil": 2080, "Colombia": 2005, 
                 "Spain": 2030, "USA": 1900, "France": 2105, "England": 2040, 
-                "Mexico": 1868, "Uruguay": 2000
+                "Mexico": 1868, "South Africa": 1750, "Uruguay": 2000
             };
             return baseSegura[eq_EN] || 1750;
         }
@@ -190,7 +190,6 @@
         let mercadoRealEncontrado = false;
 
         try {
-            // Buscamos a través de la API mandando los nombres limpios
             let urlBusqueda = `/api/poly?a=${encodeURIComponent(eqA_EN)}&b=${encodeURIComponent(eqB_EN)}`;
             let res = await fetch(urlBusqueda);
             
@@ -201,13 +200,20 @@
 
             if (eventoElegido && eventoElegido.markets) {
                 for (let mercado of eventoElegido.markets) {
+                    // ESCUDO DE SEGURIDAD: Ignorar mercados rotos
+                    if (!mercado.outcomes || !mercado.outcomePrices) continue; 
+                    
                     let opciones = typeof mercado.outcomes === 'string' ? JSON.parse(mercado.outcomes) : mercado.outcomes;
                     let precios = typeof mercado.outcomePrices === 'string' ? JSON.parse(mercado.outcomePrices) : mercado.outcomePrices;
                     
+                    if (!opciones || !precios || precios.length === 0) continue;
+
                     let idxYes = opciones.findIndex(o => o.toLowerCase() === 'yes');
                     if (idxYes === -1) idxYes = 0; 
 
                     let precio = parseFloat(precios[idxYes]);
+                    if (isNaN(precio)) continue;
+
                     let tituloMercado = (mercado.question || mercado.groupItemTitle || mercado.description || "").toLowerCase();
 
                     if (tituloMercado.includes(eqA_EN.toLowerCase()) || tituloMercado.includes(eqA.toLowerCase().substring(0,3))) {
@@ -281,7 +287,6 @@
             }
         }
 
-        // Peso: 70% Mercado / 30% Matemática pura
         const alpha = 0.70; 
         let pA = (alpha * datos.mktLocal) + ((1 - alpha) * probLocalELO);
         let pE = (alpha * datos.mktEmpate) + ((1 - alpha) * probEmpateELO);
