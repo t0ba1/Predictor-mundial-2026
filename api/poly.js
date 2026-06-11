@@ -1,11 +1,10 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     const { a, b } = req.query;
 
     if (!a || !b) {
         return res.status(400).json({ error: "Faltan los equipos" });
     }
 
-    // Usamos el endpoint de BÚSQUEDA de Polymarket en lugar de buscar por URL estricta
     const searchQuery = `${a} ${b}`;
     const url = `https://gamma-api.polymarket.com/events?query=${encodeURIComponent(searchQuery)}&active=true&closed=false`;
 
@@ -25,7 +24,6 @@ export default async function handler(req, res) {
         
         let eventoEncontrado = null;
         if (data && data.length > 0) {
-            // Polymarket puede devolver varios resultados. Filtramos el evento principal que contenga ambos equipos.
             eventoEncontrado = data.find(ev => 
                 ev.title.toLowerCase().includes(a.toLowerCase()) && 
                 ev.title.toLowerCase().includes(b.toLowerCase())
@@ -39,4 +37,4 @@ export default async function handler(req, res) {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
