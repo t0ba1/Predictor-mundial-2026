@@ -1,7 +1,5 @@
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     try {
-        // Obtenemos los datos base de World Football Elo Ratings
-        // Ellos almacenan sus datos crudos en archivos .tsv
         const response = await fetch('https://www.eloratings.net/World.tsv');
         
         if (!response.ok) {
@@ -13,8 +11,6 @@ export default async function handler(req, res) {
         
         let eloData = {};
 
-        // Mapeo básico para que coincidan con los nombres en inglés de tu frontend
-        // eloratings usa nombres propios que a veces varían ligeramente
         const mapeoNombres = {
             "United States": "USA",
             "South Korea": "South Korea",
@@ -30,7 +26,6 @@ export default async function handler(req, res) {
                 let country = parts[1].trim();
                 let elo = parseInt(parts[2].trim(), 10);
                 
-                // Normalizamos el nombre si está en nuestro mapeo
                 if (mapeoNombres[country]) {
                     country = mapeoNombres[country];
                 }
@@ -40,10 +35,10 @@ export default async function handler(req, res) {
         }
 
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Cache-Control', 's-maxage=3600'); // Cacheamos 1 hora para no saturarlos
+        res.setHeader('Cache-Control', 's-maxage=3600');
         res.status(200).json(eloData);
 
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-}
+};
