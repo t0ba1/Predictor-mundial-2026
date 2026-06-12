@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predictor Mundial 2026: ELO + Polymarket</title>
+    <title>Predictor Mundial 2026</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; color: #1c1e21; padding: 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f0f2f5; color: #1c1e21; padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #1877f2; margin-bottom: 5px; }
         p.subtitle { text-align: center; color: #65676b; margin-bottom: 20px; }
@@ -34,65 +34,33 @@
 
 <div class="container">
     <h1>⚽ Predictor Mundial 2026</h1>
-    <p class="subtitle">Motor Cuantitativo: ELO Dinámico + Polymarket Proxy + Poisson</p>
+    <p class="subtitle">Motor Cuantitativo: ELO Dinámico + Serverless API Búsqueda + Poisson</p>
 
     <div class="selectors">
         <div class="selector-group">
             <label for="equipoA">Equipo Local (A)</label>
             <select id="equipoA">
-                <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
-                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
-                <option value="Australia">Australia</option><option value="Austria">Austria</option>
-                <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
-                <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
-                <option value="Canadá">Canadá</option><option value="Chequia">Chequia</option>
+                <option value="Alemania">Alemania</option><option value="Argentina">Argentina</option>
+                <option value="Brasil">Brasil</option><option value="Chequia">Chequia</option>
                 <option value="Colombia">Colombia</option><option value="Corea del Sur">Corea del Sur</option>
-                <option value="Costa de Marfil">Costa de Marfil</option><option value="Croacia">Croacia</option>
-                <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
-                <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
                 <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
-                <option value="Francia">Francia</option><option value="Ghana">Ghana</option>
-                <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
-                <option value="Irak">Irak</option><option value="Irán">Irán</option>
-                <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
+                <option value="Francia">Francia</option><option value="Inglaterra">Inglaterra</option>
                 <option value="Marruecos">Marruecos</option><option value="México" selected>México</option>
-                <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
-                <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
-                <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
-                <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
-                <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
-                <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
-                <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
-                <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
+                <option value="Países Bajos">Países Bajos</option><option value="Portugal">Portugal</option>
+                <option value="Sudáfrica">Sudáfrica</option><option value="Uruguay">Uruguay</option>
             </select>
         </div>
         <div class="selector-group">
             <label for="equipoB">Equipo Visitante (B)</label>
             <select id="equipoB">
-                <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
-                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
-                <option value="Australia">Australia</option><option value="Austria">Austria</option>
-                <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
-                <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
-                <option value="Canadá">Canadá</option><option value="Chequia">Chequia</option>
+                <option value="Alemania">Alemania</option><option value="Argentina">Argentina</option>
+                <option value="Brasil">Brasil</option><option value="Chequia">Chequia</option>
                 <option value="Colombia">Colombia</option><option value="Corea del Sur">Corea del Sur</option>
-                <option value="Costa de Marfil">Costa de Marfil</option><option value="Croacia">Croacia</option>
-                <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
-                <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
                 <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
-                <option value="Francia">Francia</option><option value="Ghana">Ghana</option>
-                <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
-                <option value="Irak">Irak</option><option value="Irán">Irán</option>
-                <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
+                <option value="Francia">Francia</option><option value="Inglaterra">Inglaterra</option>
                 <option value="Marruecos">Marruecos</option><option value="México">México</option>
-                <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
-                <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
-                <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
-                <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
-                <option value="Senegal">Senegal</option><option value="Sudáfrica" selected>Sudáfrica</option>
-                <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
-                <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
-                <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
+                <option value="Países Bajos">Países Bajos</option><option value="Portugal">Portugal</option>
+                <option value="Sudáfrica" selected>Sudáfrica</option><option value="Uruguay">Uruguay</option>
             </select>
         </div>
     </div>
@@ -130,47 +98,22 @@
 </div>
 
 <script>
-    const traducirMundial = {
-        "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Argelia": "Algeria",
-        "Argentina": "Argentina", "Australia": "Australia", "Austria": "Austria", "Bélgica": "Belgium",
-        "Bosnia y Herzegovina": "Bosnia and Herzegovina", "Brasil": "Brazil", "Cabo Verde": "Cape Verde",
-        "Canadá": "Canada", "Chequia": "Czech Republic", "Colombia": "Colombia", "Corea del Sur": "South Korea",
-        "Costa de Marfil": "Ivory Coast", "Croacia": "Croatia", "Curazao": "Curaçao", "Ecuador": "Ecuador",
-        "Egipto": "Egypt", "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "USA",
-        "Francia": "France", "Ghana": "Ghana", "Haití": "Haiti", "Inglaterra": "England",
-        "Irak": "Iraq", "Irán": "Iran", "Japón": "Japan", "Jordania": "Jordan",
-        "Marruecos": "Morocco", "México": "Mexico", "Noruega": "Norway", "Nueva Zelanda": "New Zealand",
-        "Países Bajos": "Netherlands", "Panamá": "Panama", "Paraguay": "Paraguay", "Portugal": "Portugal",
-        "Qatar": "Qatar", "RD Congo": "DR Congo", "Senegal": "Senegal", "Sudáfrica": "South Africa",
-        "Suecia": "Sweden", "Suiza": "Switzerland", "Túnez": "Tunisia", "Turquía": "Turkey",
-        "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
-    };
-
     let cacheELO = null;
 
     async function rasparELO(equipo) {
-        let eq_EN = traducirMundial[equipo] || equipo;
-        if (equipo === "Estados Unidos") eq_EN = "USA";
+        const mapeo = { "Estados Unidos": "USA", "Chequia": "Czech Republic", "Corea del Sur": "South Korea" };
+        let eq_EN = mapeo[equipo] || equipo;
 
         try {
             if (!cacheELO) {
                 let res = await fetch('/api/elo');
-                if (!res.ok) throw new Error("Fallo en la API de ELO Serverless");
+                if (!res.ok) throw new Error();
                 cacheELO = await res.json();
             }
-
-            if (cacheELO && cacheELO[eq_EN]) {
-                return cacheELO[eq_EN];
-            } else {
-                throw new Error("País no encontrado en eloratings");
-            }
-        } catch (error) {
-            const baseSegura = {
-                "Germany": 1980, "Argentina": 2140, "Brazil": 2080, "Colombia": 2005, 
-                "Spain": 2030, "USA": 1900, "France": 2105, "England": 2040, 
-                "Mexico": 1868, "South Africa": 1750, "Uruguay": 2000
-            };
-            return baseSegura[eq_EN] || 1750;
+            return cacheELO[eq_EN] || 1750;
+        } catch {
+            const fallbacks = { "Mexico": 1868, "South Africa": 1750, "Argentina": 2140, "Germany": 1980 };
+            return fallbacks[eq_EN] || 1750;
         }
     }
 
@@ -178,67 +121,25 @@
         const eloA = await rasparELO(eqA);
         const eloB = await rasparELO(eqB);
 
-        let eqA_EN = traducirMundial[eqA] || eqA;
-        let eqB_EN = traducirMundial[eqB] || eqB;
-        if (eqA === "Estados Unidos") eqA_EN = "USA";
-        if (eqB === "Estados Unidos") eqB_EN = "USA";
-
-        let mktLocal = undefined, mktEmpate = undefined, mktVisit = undefined;
+        let mktLocal = 0, mktEmpate = 0, mktVisit = 0;
         let mercadoRealEncontrado = false;
 
         try {
-            // BYPASS: Proxy público para evadir el bloqueo de Polymarket
-            let polyAPI = `https://gamma-api.polymarket.com/events?query=${encodeURIComponent(eqA_EN)}&active=true&closed=false`;
-            let proxyURL = `https://api.allorigins.win/raw?url=${encodeURIComponent(polyAPI)}`;
-            
-            let res = await fetch(proxyURL);
-            
-            if (!res.ok) throw new Error("Proxy bloqueado");
+            let res = await fetch(`/api/poly?a=${encodeURIComponent(eqA)}&b=${encodeURIComponent(eqB)}`);
+            if (!res.ok) throw new Error("Error en el backend");
             
             let data = await res.json();
-            let eventoElegido = null;
-
-            if (data && data.length > 0) {
-                eventoElegido = data.find(ev => 
-                    ev.title.toLowerCase().includes(eqA_EN.toLowerCase()) && 
-                    ev.title.toLowerCase().includes(eqB_EN.toLowerCase())
-                );
-            }
-
-            if (eventoElegido && eventoElegido.markets) {
-                for (let mercado of eventoElegido.markets) {
-                    if (!mercado.outcomes || !mercado.outcomePrices) continue; 
-                    
-                    let opciones = typeof mercado.outcomes === 'string' ? JSON.parse(mercado.outcomes) : mercado.outcomes;
-                    let precios = typeof mercado.outcomePrices === 'string' ? JSON.parse(mercado.outcomePrices) : mercado.outcomePrices;
-                    
-                    if (!opciones || !precios || precios.length === 0) continue;
-
-                    let idxYes = opciones.findIndex(o => o.toLowerCase() === 'yes');
-                    if (idxYes === -1) idxYes = 0; 
-
-                    let precio = parseFloat(precios[idxYes]);
-                    if (isNaN(precio)) continue;
-
-                    let tituloMercado = (mercado.question || mercado.groupItemTitle || mercado.description || "").toLowerCase();
-
-                    if (tituloMercado.includes(eqA_EN.toLowerCase()) || tituloMercado.includes(eqA.toLowerCase().substring(0,3))) {
-                        mktLocal = precio;
-                    } else if (tituloMercado.includes(eqB_EN.toLowerCase()) || tituloMercado.includes(eqB.toLowerCase().substring(0,3))) {
-                        mktVisit = precio;
-                    } else if (tituloMercado.includes("draw") || tituloMercado.includes("tie") || tituloMercado.includes("empate")) {
-                        mktEmpate = precio;
-                    }
-                }
-                if (mktLocal !== undefined && mktVisit !== undefined) {
-                    if (mktEmpate === undefined) mktEmpate = 0.0;
-                    mercadoRealEncontrado = true;
-                }
-            }
-            if (!mercadoRealEncontrado) throw new Error("Mercados ausentes.");
             
+            if (data && data.mktReal) {
+                mktLocal = data.local;
+                mktEmpate = data.empate;
+                mktVisit = data.visitante;
+                mercadoRealEncontrado = true;
+            } else {
+                throw new Error(data.msg || "Mercado no disponible");
+            }
         } catch (error) {
-            console.warn("Mercado inactivo. Aplicando Fallback:", error.message);
+            console.warn("Aplicando Fallback Estructural debido a:", error.message);
             let diferenciaELO = eloA - eloB;
             let expLocal = 1 / (1 + Math.pow(10, -diferenciaELO / 400));
             let expVisit = 1 - expLocal;
@@ -263,14 +164,14 @@
         if (eqA === eqB) return alert("Seleccioná equipos distintos.");
 
         btn.disabled = true;
-        btn.innerText = "Saltando bloqueos y calculando...";
+        btn.innerText = "Calculando predicción analítica...";
         resultadosDiv.style.display = 'none';
         
         const datos = await extraerDatos(eqA, eqB);
 
-        let etiquetaMercado = datos.mercadoRealEncontrado ? "<span style='color:green;'>Mercado Encontrado (Polymarket Proxy)</span>" : "<span style='color:red;'>Simulación Matemática (Sin Mercado)</span>";
-        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO (En Vivo):</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
-        document.getElementById('debugPoly').innerHTML = `<b>${etiquetaMercado}</b><br>Local: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>Visitante: ${(datos.mktVisit*100).toFixed(1)}%`;
+        let etiqueta = datos.mercadoRealEncontrado ? "<span style='color:green;'>API OK (Polymarket Live)</span>" : "<span style='color:red;'>Simulación (API Simulada/Fallback)</span>";
+        document.getElementById('debugELO').innerHTML = `<b>Puntos ELO:</b><br>${eqA}: ${datos.eloA}<br>${eqB}: ${datos.eloB}`;
+        document.getElementById('debugPoly').innerHTML = `<b>${etiqueta}</b><br>Local: ${(datos.mktLocal*100).toFixed(1)}%<br>Empate: ${(datos.mktEmpate*100).toFixed(1)}%<br>Visitante: ${(datos.mktVisit*100).toFixed(1)}%`;
         document.getElementById('debugPanel').style.display = 'block';
 
         const difAbs = Math.abs(datos.eloA - datos.eloB);
