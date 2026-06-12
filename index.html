@@ -40,27 +40,59 @@
         <div class="selector-group">
             <label for="equipoA">Equipo Local (A)</label>
             <select id="equipoA">
-                <option value="Alemania">Alemania</option><option value="Argentina">Argentina</option>
-                <option value="Brasil">Brasil</option><option value="Chequia">Chequia</option>
+                <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
+                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
+                <option value="Australia">Australia</option><option value="Austria">Austria</option>
+                <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
+                <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
+                <option value="Canadá">Canadá</option><option value="Chequia">Chequia</option>
                 <option value="Colombia">Colombia</option><option value="Corea del Sur">Corea del Sur</option>
+                <option value="Costa de Marfil">Costa de Marfil</option><option value="Croacia">Croacia</option>
+                <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
+                <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
                 <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
-                <option value="Francia">Francia</option><option value="Inglaterra">Inglaterra</option>
+                <option value="Francia">Francia</option><option value="Ghana">Ghana</option>
+                <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
+                <option value="Irak">Irak</option><option value="Irán">Irán</option>
+                <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
                 <option value="Marruecos">Marruecos</option><option value="México" selected>México</option>
-                <option value="Países Bajos">Países Bajos</option><option value="Portugal">Portugal</option>
-                <option value="Sudáfrica">Sudáfrica</option><option value="Uruguay">Uruguay</option>
+                <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
+                <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
+                <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
+                <option value="Senegal">Senegal</option><option value="Sudáfrica">Sudáfrica</option>
+                <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
+                <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
+                <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
             </select>
         </div>
         <div class="selector-group">
             <label for="equipoB">Equipo Visitante (B)</label>
             <select id="equipoB">
-                <option value="Alemania">Alemania</option><option value="Argentina">Argentina</option>
-                <option value="Brasil">Brasil</option><option value="Chequia">Chequia</option>
+                <option value="Alemania">Alemania</option><option value="Arabia Saudita">Arabia Saudita</option>
+                <option value="Argelia">Argelia</option><option value="Argentina">Argentina</option>
+                <option value="Australia">Australia</option><option value="Austria">Austria</option>
+                <option value="Bélgica">Bélgica</option><option value="Bosnia y Herzegovina">Bosnia y Herzegovina</option>
+                <option value="Brasil">Brasil</option><option value="Cabo Verde">Cabo Verde</option>
+                <option value="Canadá">Canadá</option><option value="Chequia">Chequia</option>
                 <option value="Colombia">Colombia</option><option value="Corea del Sur">Corea del Sur</option>
+                <option value="Costa de Marfil">Costa de Marfil</option><option value="Croacia">Croacia</option>
+                <option value="Curazao">Curazao</option><option value="Ecuador">Ecuador</option>
+                <option value="Egipto">Egipto</option><option value="Escocia">Escocia</option>
                 <option value="España">España</option><option value="Estados Unidos">Estados Unidos</option>
-                <option value="Francia">Francia</option><option value="Inglaterra">Inglaterra</option>
+                <option value="Francia">Francia</option><option value="Ghana">Ghana</option>
+                <option value="Haití">Haití</option><option value="Inglaterra">Inglaterra</option>
+                <option value="Irak">Irak</option><option value="Irán">Irán</option>
+                <option value="Japón">Japón</option><option value="Jordania">Jordania</option>
                 <option value="Marruecos">Marruecos</option><option value="México">México</option>
-                <option value="Países Bajos">Países Bajos</option><option value="Portugal">Portugal</option>
-                <option value="Sudáfrica" selected>Sudáfrica</option><option value="Uruguay">Uruguay</option>
+                <option value="Noruega">Noruega</option><option value="Nueva Zelanda">Nueva Zelanda</option>
+                <option value="Países Bajos">Países Bajos</option><option value="Panamá">Panamá</option>
+                <option value="Paraguay">Paraguay</option><option value="Portugal">Portugal</option>
+                <option value="Qatar">Qatar</option><option value="RD Congo">RD Congo</option>
+                <option value="Senegal">Senegal</option><option value="Sudáfrica" selected>Sudáfrica</option>
+                <option value="Suecia">Suecia</option><option value="Suiza">Suiza</option>
+                <option value="Túnez">Túnez</option><option value="Turquía">Turquía</option>
+                <option value="Uruguay">Uruguay</option><option value="Uzbekistán">Uzbekistán</option>
             </select>
         </div>
     </div>
@@ -98,11 +130,26 @@
 </div>
 
 <script>
+    const traducirMundial = {
+        "Alemania": "Germany", "Arabia Saudita": "Saudi Arabia", "Argelia": "Algeria",
+        "Argentina": "Argentina", "Australia": "Australia", "Austria": "Austria", "Bélgica": "Belgium",
+        "Bosnia y Herzegovina": "Bosnia and Herzegovina", "Brasil": "Brazil", "Cabo Verde": "Cape Verde",
+        "Canadá": "Canada", "Chequia": "Czech Republic", "Colombia": "Colombia", "Corea del Sur": "South Korea",
+        "Costa de Marfil": "Ivory Coast", "Croacia": "Croatia", "Curazao": "Curaçao", "Ecuador": "Ecuador",
+        "Egipto": "Egypt", "Escocia": "Scotland", "España": "Spain", "Estados Unidos": "USA",
+        "Francia": "France", "Ghana": "Ghana", "Haití": "Haiti", "Inglaterra": "England",
+        "Irak": "Iraq", "Irán": "Iran", "Japón": "Japan", "Jordania": "Jordan",
+        "Marruecos": "Morocco", "México": "Mexico", "Noruega": "Norway", "Nueva Zelanda": "New Zealand",
+        "Países Bajos": "Netherlands", "Panamá": "Panama", "Paraguay": "Paraguay", "Portugal": "Portugal",
+        "Qatar": "Qatar", "RD Congo": "DR Congo", "Senegal": "Senegal", "Sudáfrica": "South Africa",
+        "Suecia": "Sweden", "Suiza": "Switzerland", "Túnez": "Tunisia", "Turquía": "Turkey",
+        "Uruguay": "Uruguay", "Uzbekistán": "Uzbekistan"
+    };
+
     let cacheELO = null;
 
     async function rasparELO(equipo) {
-        const mapeo = { "Estados Unidos": "USA", "Chequia": "Czech Republic", "Corea del Sur": "South Korea" };
-        let eq_EN = mapeo[equipo] || equipo;
+        let eq_EN = traducirMundial[equipo] || equipo;
 
         try {
             if (!cacheELO) {
@@ -112,8 +159,8 @@
             }
             return cacheELO[eq_EN] || 1750;
         } catch {
-            const fallbacks = { "Mexico": 1868, "South Africa": 1750, "Argentina": 2140, "Germany": 1980 };
-            return fallbacks[eq_EN] || 1750;
+            const baseSegura = { "Germany": 1980, "Argentina": 2140, "Brazil": 2080, "Colombia": 2005, "Spain": 2030, "USA": 1900, "France": 2105, "England": 2040, "Mexico": 1868, "South Africa": 1750, "Uruguay": 2000 };
+            return baseSegura[eq_EN] || 1750;
         }
     }
 
